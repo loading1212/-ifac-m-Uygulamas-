@@ -1,449 +1,3165 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>İslami Yardımcı</title>
-  <meta name="theme-color" content="#2E7D32" />
-  <meta name="description" content="Namaz Vakitleri, Zikirmatik, Kısa Sureler, Dini Günler ve daha fazlası." />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-  <style>
-    :root {
-      --bg: #f1f5f9; --card: #ffffff; --text: #0f172a; --muted: #475569;
-      --brand: #2e7d32; --brand-2: #1b5e20; --ring: rgba(46,125,50,.25);
-      --shadow: 0 4px 12px rgba(0,0,0,.08); --radius: 18px;
-    }
-    *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
-    html{scroll-behavior: smooth;}
-    body{
-      margin:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      color:var(--text); background:var(--bg);
-    }
-    main{max-width:960px; margin:16px auto 96px; padding:0 12px;}
-    .section-title{display:flex; align-items:center; gap:10px; margin:24px 6px 12px; font-size:20px; color:var(--text); font-weight:700;}
-    .card{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom: 16px;}
-
-    /* Header */
-    header{
-      position:sticky; top:0; z-index:30; background:linear-gradient(145deg, #2e7d32, #43a047);
-      color:#fff; padding:12px 0; box-shadow: 0 4px 12px rgba(0,0,0,.15);
-    }
-    .header-inner{max-width:960px; margin:auto; padding:0 16px; display:flex; align-items:center; justify-content:space-between;}
-    .loc{display:flex; align-items:center; gap:8px; font-weight:600; cursor:pointer;}
-    .dates{text-align:right; font-size:13px; cursor:pointer;}
-    .dates small{opacity:.85;}
-
-    /* Vakitler */
-    .times-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:#e2e8f0; border-radius:var(--radius); overflow:hidden;}
-    .time-item{background:var(--card); padding:12px 8px; text-align:center;}
-    .time-item.active{background:var(--brand); color:#fff; font-weight:600;}
-    .time-name{font-size:13px; opacity:.8; margin-bottom:4px;}
-    .time-clock{font-size:16px; font-weight:600;}
-    .time-item.active .time-name{opacity:1;}
-    .next{padding:14px; display:flex; align-items:center; gap:12px;}
-    .next .chip{background:var(--brand); color:#fff; border-radius:99px; padding:6px 12px; font-weight:700; font-size: 14px;}
-    .countdown{margin-left:auto; font-size:18px; font-weight:600;}
-
-    /* Zikirmatik */
-    .zikir-card{padding:16px; text-align:center; user-select:none;}
-    .zikir-display{font-size:64px; font-weight:bold; color:var(--brand); margin-bottom:12px; line-height:1;}
-    .zikir-controls{display:flex; justify-content:center; align-items:center; gap:12px;}
-    .zikir-btn{width:120px; height:120px; border-radius:50%; background:linear-gradient(145deg, #43a047, #2e7d32); color:white; border:none; font-size:24px; box-shadow: 0 4px 8px rgba(0,0,0,.2); cursor:pointer; transition: transform .1s;}
-    .zikir-btn:active{transform: scale(0.95);}
-    .reset-btn{width:48px; height:48px; border-radius:50%; background:#e2e8f0; color:var(--muted); border:none; cursor:pointer;}
-
-    /* Kısa Sureler */
-    .sure-tabs{display:flex; gap:8px; padding:12px; overflow-x:auto;}
-    .sure-tab{padding:8px 14px; border-radius:99px; background:#e2e8f0; border:none; font-weight:600; cursor:pointer; flex-shrink:0;}
-    .sure-tab.active{background:var(--brand); color:white;}
-    .sure-content{padding:0 16px 16px; text-align:center;}
-    .sure-bismillah{margin:12px 0; font-size:22px; font-family: 'Times New Roman', serif;}
-    .sure-arabic{font-size:24px; line-height:1.8; margin-bottom:16px; font-family: 'Times New Roman', serif;}
-    .sure-meal{font-style:italic; color:var(--muted);}
-
-    /* Günün Hikmeti */
-    .daily-card{padding:16px; text-align:center;}
-    .daily-card .title{font-weight:700; font-size:18px; margin-bottom:8px;}
-    .daily-card .content{font-style:italic; margin-bottom:12px; color: #334155;}
-    .daily-card .divider{height:1px; background: #e5e7eb; margin: 16px auto; width: 80%;}
-    .daily-card .esma-meaning{font-size:14px; color: #475569;}
-
-    /* Ayarlar */
-    .settings{padding:12px;}
-    .setting{display:flex;align-items:center;justify-content:space-between;padding:12px;border-bottom:1px dashed #e5e7eb;}
-    .setting:last-child{border-bottom:none;}
-    .switch{position:relative;width:50px;height:28px}
-    .switch input{display:none}
-    .slider{position:absolute;inset:0;background:#e5e7eb;border-radius:999px;transition:.2s}
-    .slider::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;background:#fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.2s}
-    .switch input:checked + .slider{background:var(--brand)}
-    .switch input:checked + .slider::after{transform:translateX(22px)}
-
-    /* Modal */
-    .modal-overlay{position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:100; display:none; place-items:center; animation:fadeIn .3s;}
-    .modal-overlay.show{display:grid;}
-    .modal-card{width:min(520px, 92vw); background:var(--card); border-radius:var(--radius); padding:20px; max-height:80vh; overflow-y:auto;}
-    @keyframes zoomIn{from{opacity:0; transform:scale(.9)} to{opacity:1; transform:scale(1)}}
-    .modal-card h3{margin:0 0 12px; font-size:20px;}
-    .modal-card p{margin:0 0 16px; opacity:.8;}
-    .modal-row{display:flex; gap:8px;}
-    .modal-row input{flex:1; padding:12px; border-radius:12px; border:1px solid #e2e8f0; font-size:16px;}
-    .modal-row button{padding:12px 16px; border:none; border-radius:12px; background:var(--brand); color:#fff; font-weight:700; cursor:pointer;}
-    .dini-gun{display:flex; justify-content:space-between; padding:10px 4px; border-bottom: 1px solid #f1f5f9;}
-    .dini-gun:last-child{border-bottom:none;}
-    .dini-gun-date{font-weight:500; color:var(--muted);}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Şifacım - Doğal Tedavi Rehberi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-light: #4caf50;
+            --primary-dark: #1b5e20;
+            --secondary: #ff9800;
+            --accent: #8bc34a;
+            --text: #333;
+            --text-light: #666;
+            --background: #f1f8e9;
+            --card: #ffffff;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+            --gradient: linear-gradient(135deg, var(--primary), var(--primary-light));
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: var(--gradient);
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .language-selector {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .lang-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .lang-btn.active {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            position: relative;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+        }
+        
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+        
+        @media (min-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .search-section, .plant-of-day {
+                grid-column: 1 / -1;
+            }
+            
+            .categories, .notes {
+                grid-column: span 1;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            
+            .search-section {
+                grid-column: 1 / -1;
+            }
+            
+            .plant-of-day {
+                grid-column: span 2;
+            }
+            
+            .categories {
+                grid-column: span 1;
+            }
+            
+            .notes {
+                grid-column: span 1;
+            }
+        }
+        
+        .section {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+        
+        .section:hover {
+            transform: translateY(-5px);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+            font-size: 1.4rem;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+        }
+        
+        .search-box {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 18px;
+            border: 2px solid var(--primary-light);
+            border-radius: 12px 0 0 12px;
+            font-size: 1.1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .search-box input:focus {
+            border-color: var(--primary);
+        }
+        
+        .search-box button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 25px;
+            border-radius: 0 12px 12px 0;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background 0.3s;
+        }
+        
+        .search-box button:hover {
+            background: var(--primary-dark);
+        }
+        
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .category-card {
+            background: var(--gradient);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 140px;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .category-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .plant-of-day {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+        }
+        
+        .plant-image {
+            width: 140px;
+            height: 140px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 3.5rem;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        .plant-name {
+            font-size: 1.8rem;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+        }
+        
+        .plant-benefits {
+            line-height: 1.7;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .notes-container {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding-right: 10px;
+        }
+        
+        .note-item {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--secondary);
+            transition: transform 0.2s;
+        }
+        
+        .note-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .note-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .note-title {
+            font-weight: bold;
+            color: var(--primary-dark);
+            font-size: 1.1rem;
+        }
+        
+        .note-date {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+        
+        .note-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 12px;
+        }
+        
+        .note-actions button {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+        
+        .note-actions button:hover {
+            color: var(--primary-dark);
+        }
+        
+        .add-note {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .add-note input, .add-note textarea {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .add-note input:focus, .add-note textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .add-note textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .add-note button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .add-note button:hover {
+            background: var(--primary-dark);
+        }
+        
+        .results {
+            display: none;
+            margin-top: 25px;
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .result-title {
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+        
+        .result-content {
+            line-height: 1.7;
+        }
+        
+        .treatment-list {
+            margin-top: 20px;
+        }
+        
+        .treatment-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--primary);
+            transition: transform 0.2s;
+        }
+        
+        .treatment-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .treatment-item h4 {
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .treatment-item p {
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 25px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: var(--text-light);
+            font-size: 1rem;
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .back-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s;
+        }
+        
+        .back-button:hover {
+            background: var(--primary-dark);
+        }
+        
+        .disease-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .disease-item {
+            background: #f1f8e9;
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid var(--primary-light);
+            text-align: center;
+        }
+        
+        .disease-item:hover {
+            background: #e8f5e9;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .quick-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .quick-link {
+            background: var(--accent);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .quick-link:hover {
+            background: var(--primary);
+        }
+        
+        @media (max-width: 600px) {
+            .categories-grid, .disease-list {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .search-box input {
+                border-radius: 12px;
+                margin-bottom: 12px;
+            }
+            
+            .search-box button {
+                border-radius: 12px;
+                padding: 15px;
+            }
+            
+            .header-top {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-
-  <header>
-    <div class="header-inner">
-      <div class="loc" id="change-city-btn">
-        <i class="fa-solid fa-location-dot"></i>
-        <span id="location-text">Yükleniyor...</span>
-      </div>
-      <div class="dates" id="dini-gunler-btn">
-        <div id="hijri-date">—</div>
-        <small id="greg-date">—</small>
-      </div>
-    </div>
-  </header>
-
-  <main>
-    <div id="vakitler">
-      <h3 class="section-title"><i class="fa-solid fa-clock"></i> Namaz Vakitleri</h3>
-      <div class="card">
-        <div id="times" class="times-grid"></div>
-        <div class="next">
-          <span class="chip" id="next-name">—</span>
-          <strong class="countdown" id="countdown">00:00:00</strong>
-        </div>
-      </div>
-    </div>
-
-    <div id="zikirmatik">
-        <h3 class="section-title"><i class="fa-solid fa-hands-praying"></i> Zikirmatik</h3>
-        <div class="card zikir-card">
-            <div id="zikir-display" class="zikir-display">0</div>
-            <div class="zikir-controls">
-                <button id="reset-zikir-btn" class="reset-btn"><i class="fa-solid fa-arrow-rotate-left"></i></button>
-                <button id="zikir-btn" class="zikir-btn">Bas</button>
+    <div class="container">
+        <header>
+            <div class="header-top">
+                <h1><i class="fas fa-leaf"></i> Şifacım</h1>
+                <div class="language-selector">
+                    <button class="lang-btn active" data-lang="tr">Türkçe</button>
+                    <button class="lang-btn" data-lang="en">English</button>
+                </div>
+            </div>
+            <p data-translate="subtitle">Doğal Tedavi Rehberi ve Çözüm</p>
+        </header>
+        
+        <div class="app-container">
+            <div class="search-section section">
+                <div class="section-title">
+                    <i class="fas fa-search"></i>
+                    <h2 data-translate="search_title">Hastalık Ara</h2>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Hastalık adı girin... (Örnek: baş ağrısı, öksürük)" data-translate="search_placeholder">
+                    <button id="searchButton"><i class="fas fa-search"></i> <span data-translate="search_button">Ara</span></button>
+                </div>
+                
+                <div class="quick-links">
+                    <div class="quick-link" data-disease="migren" data-translate="migraine">Migren</div>
+                    <div class="quick-link" data-disease="grip" data-translate="flu">Grip</div>
+                    <div class="quick-link" data-disease="alerji" data-translate="allergy">Alerji</div>
+                    <div class="quick-link" data-disease="depresyon" data-translate="depression">Depresyon</div>
+                    <div class="quick-link" data-disease="kireçlenme" data-translate="arthritis">Kireçlenme</div>
+                    <div class="quick-link" data-disease="yüksek tansiyon" data-translate="hypertension">Yüksek Tansiyon</div>
+                    <div class="quick-link" data-disease="hemoroid" data-translate="hemorrhoids">Hemoroid</div>
+                </div>
+                
+                <div class="section-title">
+                    <i class="fas fa-list"></i>
+                    <h2 data-translate="categories_title">Kategoriler</h2>
+                </div>
+                <div class="categories-grid">
+                    <div class="category-card" data-category="bebek">
+                        <i class="fas fa-baby"></i>
+                        <h3 data-translate="baby_diseases">Bebek Hastalıkları</h3>
+                    </div>
+                    <div class="category-card" data-category="cocuk">
+                        <i class="fas fa-child"></i>
+                        <h3 data-translate="child_diseases">Çocuk Hastalıkları</h3>
+                    </div>
+                    <div class="category-card" data-category="yetiskin">
+                        <i class="fas fa-user"></i>
+                        <h3 data-translate="adult_diseases">Yetişkin Hastalıkları</h3>
+                    </div>
+                    <div class="category-card" data-category="cilt">
+                        <i class="fas fa-hand-holding-heart"></i>
+                        <h3 data-translate="skin_problems">Cilt Problemleri</h3>
+                    </div>
+                    <div class="category-card" data-category="sindirim">
+                        <i class="fas fa-stomach"></i>
+                        <h3 data-translate="digestive_system">Sindirim Sistemi</h3>
+                    </div>
+                    <div class="category-card" data-category="solunum">
+                        <i class="fas fa-lungs"></i>
+                        <h3 data-translate="respiratory_system">Solunum Yolları</h3>
+                    </div>
+                    <div class="category-card" data-category="romatizma">
+                        <i class="fas fa-bone"></i>
+                        <h3 data-translate="rheumatism">Romatizma</h3>
+                    </div>
+                    <div class="category-card" data-category="ruh">
+                        <i class="fas fa-brain"></i>
+                        <h3 data-translate="mental_health">Ruh Sağlığı</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="plant-of-day section">
+                <div class="section-title">
+                    <i class="fas fa-seedling"></i>
+                    <h2 data-translate="plant_of_day">Günün Şifalı Bitkisi</h2>
+                </div>
+                <div class="plant-image">
+                    <i class="fas fa-leaf" id="plantIcon"></i>
+                </div>
+                <h3 class="plant-name" id="plantName">Zencefil</h3>
+                <p class="plant-benefits" id="plantBenefits" data-translate="ginger_benefits">Zencefil, mide bulantısı, hazımsızlık ve soğuk algınlığı semptomlarını hafifletmek için kullanılır. Anti-inflamatuar ve antioksidan özelliklere sahiptir. Ayrıca bağışıklık sistemini güçlendirir ve kan dolaşımını artırır.</p>
+                <div class="plant-usage">
+                    <p><strong data-translate="usage">Kullanım Şekli:</strong> <span id="plantUsage" data-translate="ginger_usage">Çay olarak, yemeklerde veya taze olarak tüketilebilir. Zencefil çayı için 2-3 dilim taze zencefili 10 dakika kaynatın.</span></p>
+                </div>
+            </div>
+            
+            <div class="notes section">
+                <div class="section-title">
+                    <i class="fas fa-sticky-note"></i>
+                    <h2 data-translate="my_notes">Notlarım</h2>
+                </div>
+                <div class="notes-container" id="notesContainer">
+                    <!-- Notlar buraya eklenecek -->
+                </div>
+                <div class="add-note">
+                    <input type="text" id="noteTitle" placeholder="Not başlığı" data-translate="note_title_placeholder">
+                    <textarea id="noteContent" placeholder="Not içeriği" data-translate="note_content_placeholder"></textarea>
+                    <button id="addNoteBtn"><i class="fas fa-plus"></i> <span data-translate="add_note">Not Ekle</span></button>
+                </div>
             </div>
         </div>
-    </div>
-
-    <div id="sureler">
-        <h3 class="section-title"><i class="fa-solid fa-book-quran"></i> Kısa Sureler</h3>
-        <div class="card">
-            <div id="sure-tabs-container" class="sure-tabs"></div>
-            <div id="sure-content-container" class="sure-content"></div>
+        
+        <div id="results" class="results section">
+            <!-- Arama sonuçları burada gösterilecek -->
+        </div>
+        
+        <div class="footer">
+            <p data-translate="footer">Şifacım - Doğal Tedavi Rehberi © 2023 | Bu uygulama sadece bilgilendirme amaçlıdır.</p>
         </div>
     </div>
 
-    <div id="hikmet">
-      <h3 class="section-title"><i class="fa-solid fa-book-heart"></i> Günün Hikmeti</h3>
-      <div class="card daily-card">
-        <div class="title">Günün Duası</div>
-        <p id="gunun-duasi" class="content">Yükleniyor...</p>
-        <div class="divider"></div>
-        <div id="gunun-esmasi" class="title">Yükleniyor...</div>
-        <p id="esma-anlami" class="esma-meaning">Yükleniyor...</p>
-      </div>
-    </div>
-
-    <div id="ayarlar">
-      <h3 class="section-title"><i class="fa-solid fa-gear"></i> Ayarlar</h3>
-      <div class="card settings">
-        <div class="setting">
-          <label><i class="fa-solid fa-bell"></i> Ezan Bildirimi</label>
-          <label class="switch">
-            <input id="notif-toggle" type="checkbox" checked />
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- Şehir Seçme Modalı -->
-  <div id="city-modal" class="modal-overlay">
-    <div class="modal-card" style="animation: zoomIn .3s;">
-      <h3><i class="fa-solid fa-city"></i> Şehir Seçin</h3>
-      <p>Namaz vakitlerini görmek için lütfen Türkiye'den bir il seçin.</p>
-      <div class="modal-row">
-        <input id="city-input" list="tr-cities" placeholder="Örn: İstanbul" autocomplete="off"/>
-        <button id="city-ok-btn">Onayla</button>
-      </div>
-      <datalist id="tr-cities">
-        <option value="Adana"><option value="Adıyaman"><option value="Afyonkarahisar"><option value="Ağrı"><option value="Aksaray"><option value="Amasya"><option value="Ankara"><option value="Antalya"><option value="Ardahan"><option value="Artvin"><option value="Aydın"><option value="Balıkesir"><option value="Bartın"><option value="Batman"><option value="Bayburt"><option value="Bilecik"><option value="Bingöl"><option value="Bitlis"><option value="Bolu"><option value="Burdur"><option value="Bursa"><option value="Çanakkale"><option value="Çankırı"><option value="Çorum"><option value="Denizli"><option value="Diyarbakır"><option value="Düzce"><option value="Edirne"><option value="Elazığ"><option value="Erzincan"><option value="Erzurum"><option value="Eskişehir"><option value="Gaziantep"><option value="Giresun"><option value="Gümüşhane"><option value="Hakkari"><option value="Hatay"><option value="Iğdır"><option value="Isparta"><option value="İstanbul"><option value="İzmir"><option value="Kahramanmaraş"><option value="Karabük"><option value="Karaman"><option value="Kars"><option value="Kastamonu"><option value="Kayseri"><option value="Kırıkkale"><option value="Kırklareli"><option value="Kırşehir"><option value="Kilis"><option value="Kocaeli"><option value="Konya"><option value="Kütahya"><option value="Malatya"><option value="Manisa"><option value="Mardin"><option value="Mersin"><option value="Muğla"><option value="Muş"><option value="Nevşehir"><option value="Niğde"><option value="Ordu"><option value="Osmaniye"><option value="Rize"><option value="Sakarya"><option value="Samsun"><option value="Siirt"><option value="Sinop"><option value="Sivas"><option value="Şanlıurfa"><option value="Şırnak"><option value="Tekirdağ"><option value="Tokat"><option value="Trabzon"><option value="Tunceli"><option value="Uşak"><option value="Van"><option value="Yalova"><option value="Yozgat"><option value="Zonguldak">
-      </datalist>
-    </div>
-  </div>
-
-  <!-- Dini Günler Modalı -->
-  <div id="dini-gunler-modal" class="modal-overlay">
-    <div class="modal-card" style="animation: zoomIn .3s;">
-        <h3><i class="fa-solid fa-calendar-days"></i> Dini Günler</h3>
-        <div id="dini-gunler-listesi">Yükleniyor...</div>
-    </div>
-  </div>
-
-  <script>
-    const $ = (s) => document.querySelector(s);
-    const $$ = (s) => document.querySelectorAll(s);
-
-    // --- UYGULAMA BAŞLANGICI ---
-    document.addEventListener('DOMContentLoaded', () => {
-        // Temel modülleri yükle
-        setupVakitler();
-        setupZikirmatik();
-        setupSureler();
-        loadDailyWisdom();
-        setupModals();
-        setupAyarlar();
-    });
-
-    // --- AYARLAR ---
-    function setupAyarlar() {
-        $('#notif-toggle').addEventListener('change', (e) => {
-            // Bu kısım, Service Worker (sw.js) ile bildirimleri yönetmek için kullanılır.
-            // Tek dosya versiyonunda, bu ayar sadece görseldir.
-            console.log('Bildirim ayarı değişti:', e.target.checked);
-        });
-    }
-
-    // --- MODAL YÖNETİMİ ---
-    function setupModals() {
-        $('#change-city-btn').addEventListener('click', () => $('#city-modal').style.display = 'grid');
-        $('#dini-gunler-btn').addEventListener('click', () => {
-            loadDiniGunler();
-            $('#dini-gunler-modal').style.display = 'grid';
-        });
-
-        // Modalları kapatma
-        $$('.modal-overlay').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.style.display = 'none';
-                }
-            });
-        });
-    }
-
-    // --- VAKİTLER MODÜLÜ ---
-    function setupVakitler() {
-        let timings = null;
-        let nextAt = null;
-        let countdownInterval = null;
-
-        const savedCity = localStorage.getItem('city');
-        if (savedCity) {
-            loadTimingsByCity(savedCity);
-        } else {
-            $('#city-modal').style.display = 'grid';
-        }
-
-        $('#city-ok-btn').addEventListener('click', () => {
-            const city = $('#city-input').value.trim();
-            if (city) {
-                localStorage.setItem('city', city);
-                loadTimingsByCity(city);
-                $('#city-modal').style.display = 'none';
-            }
-        });
-
-        async function loadTimingsByCity(city) {
-            $('#location-text').textContent = city;
-            try {
-                const url = `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=Turkey&method=13`;
-                const r = await fetch(url);
-                const j = await r.json();
-                if (j.code !== 200) throw new Error('API Error');
-                
-                timings = j.data.timings;
-                const date = j.data.date;
-                $('#hijri-date').textContent = `${date.hijri.day} ${date.hijri.month.ar} ${date.hijri.year}`;
-                $('#greg-date').textContent = date.readable;
-                renderTimes();
-            } catch (err) {
-                $('#location-text').textContent = 'Veri Alınamadı';
-            }
-        }
-
-        function renderTimes() {
-            const map = [['Fajr','İmsak'], ['Sunrise','Güneş'], ['Dhuhr','Öğle'], ['Asr','İkindi'], ['Maghrib','Akşam'], ['Isha','Yatsı']];
-            const wrap = $('#times');
-            wrap.innerHTML = '';
-            map.forEach(([k, tr]) => {
-                wrap.innerHTML += `<div class="time-item" data-key="${k}"><div class="time-name">${tr}</div><div class="time-clock">${timings[k]}</div></div>`;
-            });
-            computeNext();
-        }
-
-        function computeNext() {
-            const order = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
-            const now = new Date();
-            let nextIdx = order.findIndex(k => parseTodayHHMM(timings[k]) > now);
-
-            if (nextIdx === -1) {
-                nextIdx = 0;
-                nextAt = new Date(parseTodayHHMM(timings.Fajr).getTime() + 24 * 3600 * 1000);
-            } else {
-                nextAt = parseTodayHHMM(timings[order[nextIdx]]);
-            }
-
-            const names = {Fajr:'İmsak', Sunrise:'Güneş', Dhuhr:'Öğle', Asr:'İkindi', Maghrib:'Akşam', Isha:'Yatsı'};
-            $('#next-name').textContent = names[order[nextIdx]];
-            $$('.time-item').forEach(el => el.classList.remove('active'));
-            $(`.time-item[data-key="${order[nextIdx]}"]`)?.classList.add('active');
-            startCountdown();
-        }
-
-        function startCountdown() {
-            if (countdownInterval) clearInterval(countdownInterval);
-            countdownInterval = setInterval(() => {
-                const remaining = nextAt.getTime() - new Date().getTime();
-                if (remaining <= 0) {
-                    computeNext();
-                    return;
-                }
-                const s = Math.floor(remaining / 1000);
-                const m = Math.floor(s / 60);
-                const h = Math.floor(m / 60);
-                $('#countdown').textContent = `${String(h).padStart(2,'0')}:${String(m%60).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
-            }, 1000);
-        }
-
-        function parseTodayHHMM(s) {
-            const [hh, mm] = s.split(':').map(Number);
-            const d = new Date();
-            d.setHours(hh, mm, 0, 0);
-            return d;
-        }
-    }
-
-    // --- ZİKİRMATİK MODÜLÜ ---
-    function setupZikirmatik() {
-        let zikirCount = parseInt(localStorage.getItem('zikirCount') || '0');
-        const display = $('#zikir-display');
-        display.textContent = zikirCount;
-
-        $('#zikir-btn').addEventListener('click', () => {
-            zikirCount++;
-            display.textContent = zikirCount;
-            localStorage.setItem('zikirCount', zikirCount);
-            if (navigator.vibrate) navigator.vibrate(50);
-        });
-
-        $('#reset-zikir-btn').addEventListener('click', () => {
-            if (confirm('Sayacı sıfırlamak istediğinizden emin misiniz?')) {
-                zikirCount = 0;
-                display.textContent = zikirCount;
-                localStorage.setItem('zikirCount', zikirCount);
-            }
-        });
-    }
-
-    // --- KISA SURELER MODÜLÜ ---
-    function setupSureler() {
-        const sureler = {
-            "Fatiha": {
-                arabic: "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ<br>ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ<br>ٱلرَّحْمَٰنِ ٱلرَّحِيمِ<br>مَٰلِكِ يَوْمِ ٱلدِّينِ<br>إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ<br>ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ<br>صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ",
-                meal: "Rahmân ve Rahîm olan Allah'ın adıyla. Hamd, Âlemlerin Rabbi, Rahmân, Rahîm, hesap ve ceza gününün (ahiret gününün) maliki Allah'a mahsustur. (Allahım!) Yalnız sana ibadet ederiz ve yalnız senden yardım dileriz. Bizi doğru yola, kendilerine nimet verdiklerinin yoluna ilet; gazaba uğrayanlarınkine ve sapıklarınkine değil."
+    <script>
+        // Dil çevirileri
+        const translations = {
+            tr: {
+                subtitle: "Doğal Tedavi Rehberi ve Çözüm",
+                search_title: "Hastalık Ara",
+                search_placeholder: "Hastalık adı girin... (Örnek: baş ağrısı, öksürük)",
+                search_button: "Ara",
+                migraine: "Migren",
+                flu: "Grip",
+                allergy: "Alerji",
+                depression: "Depresyon",
+                arthritis: "Kireçlenme",
+                hypertension: "Yüksek Tansiyon",
+                hemorrhoids: "Hemoroid",
+                categories_title: "Kategoriler",
+                baby_diseases: "Bebek Hastalıkları",
+                child_diseases: "Çocuk Hastalıkları",
+                adult_diseases: "Yetişkin Hastalıkları",
+                skin_problems: "Cilt Problemleri",
+                digestive_system: "Sindirim Sistemi",
+                respiratory_system: "Solunum Yolları",
+                rheumatism: "Romatizma",
+                mental_health: "Ruh Sağlığı",
+                plant_of_day: "Günün Şifalı Bitkisi",
+                ginger_benefits: "Zencefil, mide bulantısı, hazımsızlık ve soğuk algınlığı semptomlarını hafifletmek için kullanılır. Anti-inflamatuar ve antioksidan özelliklere sahiptir. Ayrıca bağışıklık sistemini güçlendirir ve kan dolaşımını artırır.",
+                usage: "Kullanım Şekli",
+                ginger_usage: "Çay olarak, yemeklerde veya taze olarak tüketilebilir. Zencefil çayı için 2-3 dilim taze zencefili 10 dakika kaynatın.",
+                my_notes: "Notlarım",
+                note_title_placeholder: "Not başlığı",
+                note_content_placeholder: "Not içeriği",
+                add_note: "Not Ekle",
+                footer: "Şifacım - Doğal Tedavi Rehberi © 2023 | Bu uygulama sadece bilgilendirme amaçlıdır.",
+                no_notes: "Henüz not eklenmemiş. İlk notunu eklemek için aşağıdaki formu kullan.",
+                no_results: "Sonuç Bulunamadı",
+                no_results_desc: "Aradığınız hastalık bulunamadı. Lütfen farklı bir anahtar kelime deneyin.",
+                no_results_tip: "İpucu: Hastalık adını tam yazdığınızdan emin olun veya kategorilere göz atın.",
+                treatments_title: "Doğal Tedavi Yöntemleri",
+                warning: "Önemli Uyarı",
+                warning_text: "Bu bilgiler sadece bilgilendirme amaçlıdır. Ciddi sağlık sorunlarında mutlaka bir doktora başvurunuz. Doğal tedaviler geleneksel tıbbi tedavilerin yerine geçmez, tamamlayıcı olarak kullanılabilir.",
+                back_button: "Geri Dön"
             },
-            "İhlas": {
-                arabic: "قُلْ هُوَ ٱللَّهُ أَحَدٌ<br>ٱللَّهُ ٱلصَّمَدُ<br>لَمْ يَلِدْ وَلَمْ يُولَدْ<br>وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ",
-                meal: "De ki: O, Allah'tır, bir tektir. Allah Samed'dir. (Her şey O'na muhtaçtır, O, hiçbir şeye muhtaç değildir.) O'ndan çocuk olmamıştır (kimsenin babası değildir). Kendisi de doğmamıştır (kimsenin çocuğu değildir). Hiçbir şey O'na denk ve benzer değildir."
-            },
-            "Felak": {
-                arabic: "قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ<br>مِن شَرِّ مَا خَلَقَ<br>وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ<br>وَمِن شَرِّ ٱلنَّفَّٰثَٰتِ فِى ٱلْعُقَدِ<br>وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ",
-                meal: "De ki: Yarattığı şeylerin şerrinden, karanlığı çöktüğü zaman gecenin şerrinden, düğümlere üfleyenlerin şerrinden, haset ettiği zaman hasetçinin şerrinden, sabahın Rabbine sığınırım!"
-            },
-            "Nas": {
-                arabic: "قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ<br>مَلِكِ ٱلنَّاسِ<br>إِلَٰهِ ٱلنَّاسِ<br>مِن شَرِّ ٱلْوَسْوَاسِ ٱلْخَنَّاسِ<br>ٱلَّذِى يُوَسْوِسُ فِى صُدُورِ ٱلنَّاسِ<br>مِنَ ٱلْجِنَّةِ وَٱلنَّاسِ",
-                meal: "De ki: Cinlerden ve insanlardan; insanların kalplerine vesvese veren sinsi vesvesecinin şerrinden, insanların Rabbine, insanların Melik’ine, insanların İlah’ına sığınırım."
+            en: {
+                subtitle: "Natural Treatment Guide and Solutions",
+                search_title: "Search Disease",
+                search_placeholder: "Enter disease name... (Example: headache, cough)",
+                search_button: "Search",
+                migraine: "Migraine",
+                flu: "Flu",
+                allergy: "Allergy",
+                depression: "Depression",
+                arthritis: "Arthritis",
+                hypertension: "Hypertension",
+                hemorrhoids: "Hemorrhoids",
+                categories_title: "Categories",
+                baby_diseases: "Baby Diseases",
+                child_diseases: "Child Diseases",
+                adult_diseases: "Adult Diseases",
+                skin_problems: "Skin Problems",
+                digestive_system: "Digestive System",
+                respiratory_system: "Respiratory System",
+                rheumatism: "Rheumatism",
+                mental_health: "Mental Health",
+                plant_of_day: "Medicinal Plant of the Day",
+                ginger_benefits: "Ginger is used to relieve nausea, indigestion and cold symptoms. It has anti-inflammatory and antioxidant properties. It also strengthens the immune system and increases blood circulation.",
+                usage: "Usage",
+                ginger_usage: "Can be consumed as tea, in meals or fresh. For ginger tea, boil 2-3 slices of fresh ginger for 10 minutes.",
+                my_notes: "My Notes",
+                note_title_placeholder: "Note title",
+                note_content_placeholder: "Note content",
+                add_note: "Add Note",
+                footer: "Şifacım - Natural Treatment Guide © 2023 | This application is for informational purposes only.",
+                no_notes: "No notes added yet. Use the form below to add your first note.",
+                no_results: "No Results Found",
+                no_results_desc: "The disease you searched for was not found. Please try a different keyword.",
+                no_results_tip: "Tip: Make sure you type the disease name correctly or browse categories.",
+                treatments_title: "Natural Treatment Methods",
+                warning: "Important Warning",
+                warning_text: "This information is for informational purposes only. For serious health problems, be sure to consult a doctor. Natural treatments do not replace traditional medical treatments, they can be used as complementary.",
+                back_button: "Back"
             }
         };
 
-        const tabsContainer = $('#sure-tabs-container');
-        const contentContainer = $('#sure-content-container');
-        Object.keys(sureler).forEach((name, index) => {
-            const tab = document.createElement('button');
-            tab.className = 'sure-tab';
-            tab.textContent = name;
-            if (index === 0) tab.classList.add('active');
-            tab.addEventListener('click', () => {
-                $$('.sure-tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                renderSureContent(name);
+        // Günün şifalı bitkileri
+        const plantsOfDay = [
+            {
+                name: "Zencefil",
+                benefits: {
+                    tr: "Zencefil, mide bulantısı, hazımsızlık ve soğuk algınlığı semptomlarını hafifletmek için kullanılır. Anti-inflamatuar ve antioksidan özelliklere sahiptir. Ayrıca bağışıklık sistemini güçlendirir ve kan dolaşımını artırır.",
+                    en: "Ginger is used to relieve nausea, indigestion and cold symptoms. It has anti-inflammatory and antioxidant properties. It also strengthens the immune system and increases blood circulation."
+                },
+                usage: {
+                    tr: "Çay olarak, yemeklerde veya taze olarak tüketilebilir. Zencefil çayı için 2-3 dilim taze zencefili 10 dakika kaynatın.",
+                    en: "Can be consumed as tea, in meals or fresh. For ginger tea, boil 2-3 slices of fresh ginger for 10 minutes."
+                },
+                icon: "fas fa-root"
+            },
+            {
+                name: "Lavanta",
+                benefits: {
+                    tr: "Lavanta, stresi azaltır, uyku kalitesini artırır ve baş ağrılarını hafifletir. Ayrıca cilt irritasyonlarına iyi gelir. Sinir sistemi üzerinde yatıştırıcı etkisi vardır.",
+                    en: "Lavender reduces stress, improves sleep quality and relieves headaches. It is also good for skin irritations. It has a calming effect on the nervous system."
+                },
+                usage: {
+                    tr: "Çay olarak, uçucu yağ şeklinde veya banyo tuzlarına eklenerek kullanılabilir. Yastığınıza birkaç damla lavanta yağı damlatabilirsiniz.",
+                    en: "Can be used as tea, in essential oil form or added to bath salts. You can put a few drops of lavender oil on your pillow."
+                },
+                icon: "fas fa-spa"
+            },
+            {
+                name: "Nane",
+                benefits: {
+                    tr: "Nane, sindirim problemlerini hafifletir, baş ağrılarını giderir ve solunum yollarını açar. Aynı zamanda enerji verici etkisi vardır. Mide spazmlarını rahatlatır.",
+                    en: "Mint relieves digestive problems, relieves headaches and opens the respiratory tract. It also has an energizing effect. Relieves stomach spasms."
+                },
+                usage: {
+                    tr: "Çay olarak, yemeklerde veya yağ formunda kullanılabilir. Nane çayı için bir tutam taze veya kuru naneyi sıcak suda 5-7 dakika demleyin.",
+                    en: "Can be used as tea, in meals or in oil form. For mint tea, steep a pinch of fresh or dried mint in hot water for 5-7 minutes."
+                },
+                icon: "fas fa-leaf"
+            }
+        ];
+
+        // GENİŞLETİLMİŞ HASTALIK VERİTABANI - 200+ HASTALIK
+        const diseases = {
+            "bebek": {
+                "pişik": {
+                    description: {
+                        tr: "Bebeklerde bez bölgesinde görülen cilt tahrişidir. Nem, idrar ve dışkının ciltle uzun süre teması sonucu oluşur.",
+                        en: "Skin irritation seen in the diaper area in babies. It occurs as a result of prolonged contact of moisture, urine and feces with the skin."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Havuç Suyu", en: "Carrot Juice" },
+                            description: { tr: "Havuç suyu ile pişik bölgesini temizlemek tahrişi azaltabilir.", en: "Cleaning the diaper rash area with carrot juice can reduce irritation." }
+                        },
+                        {
+                            title: { tr: "Zeytinyağı", en: "Olive Oil" },
+                            description: { tr: "Hafifçe ısıtılmış zeytinyağını pişik bölgesine uygulamak cildi yatıştırır.", en: "Applying lightly heated olive oil to the diaper rash area soothes the skin." }
+                        }
+                    ]
+                },
+                "gaz sancısı": {
+                    description: {
+                        tr: "Bebeklerde sık görülen, genellikle akşamları artan karın ağrısı ve huzursuzluk durumudur.",
+                        en: "A common condition in babies, usually increasing in the evenings, characterized by abdominal pain and restlessness."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Rezene Çayı", en: "Fennel Tea" },
+                            description: { tr: "Emziren anne rezene çayı içebilir veya bebeğe çok az miktarda verilebilir.", en: "Breastfeeding mother can drink fennel tea or a very small amount can be given to the baby." }
+                        }
+                    ]
+                },
+                "pamukçuk": {
+                    description: {
+                        tr: "Bebeklerin ağız içinde ve dilde görülen mantar enfeksiyonudur.",
+                        en: "Fungal infection seen in babies' mouth and tongue."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Karbonatlı Su", en: "Baking Soda Water" },
+                            description: { tr: "Bir çay kaşığı karbonatı bir bardak suya karıştırıp ağız içine uygulamak.", en: "Mix a teaspoon of baking soda in a glass of water and apply to the mouth." }
+                        }
+                    ]
+                },
+                "konak": {
+                    description: {
+                        tr: "Bebeklerin saç derisinde görülen sarımsı, yağlı kabuklanmalardır.",
+                        en: "Yellowish, oily crusts seen on babies' scalp."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zeytinyağı", en: "Olive Oil" },
+                            description: { tr: "Yatmadan önce zeytinyağı ile masaj yapıp sabunla yıkamak.", en: "Massage with olive oil before bedtime and wash with soap." }
+                        }
+                    ]
+                },
+                "ishal": {
+                    description: {
+                        tr: "Bebeklerde sık ve sulu dışkılama durumudur.",
+                        en: "Frequent and watery bowel movements in babies."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Pirinç Suyu", en: "Rice Water" },
+                            description: { tr: "Pirinç suyu ishali kesmeye yardımcı olur.", en: "Rice water helps stop diarrhea." }
+                        }
+                    ]
+                },
+                "kabızlık": {
+                    description: {
+                        tr: "Bebeklerde seyrek ve zor dışkılama durumudur.",
+                        en: "Infrequent and difficult bowel movements in babies."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Erik Püresi", en: "Prune Puree" },
+                            description: { tr: "Erik püresi bağırsak hareketlerini artırır.", en: "Prune puree increases bowel movements." }
+                        }
+                    ]
+                },
+                "ateş": {
+                    description: {
+                        tr: "Bebeklerde vücut sıcaklığının normalin üzerine çıkması durumudur.",
+                        en: "Body temperature rising above normal in babies."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Ilık Duş", en: "Warm Shower" },
+                            description: { tr: "Ilık su ile duş yaptırmak ateşi düşürmeye yardımcı olur.", en: "Giving a warm shower helps reduce fever." }
+                        }
+                    ]
+                },
+                "burun tıkanıklığı": {
+                    description: {
+                        tr: "Bebeklerde burun pasajlarının tıkanması durumudur.",
+                        en: "Blockage of nasal passages in babies."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Tuzlu Su", en: "Saline Water" },
+                            description: { tr: "Tuzlu su damlaları burun tıkanıklığını açar.", en: "Saline water drops open nasal congestion." }
+                        }
+                    ]
+                },
+                "öksürük": {
+                    description: {
+                        tr: "Bebeklerde solunum yollarını temizlemeye yönelik refleks.",
+                        en: "Reflex to clear respiratory tract in babies."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Nemlendirici", en: "Humidifier" },
+                            description: { tr: "Odaya nemlendirici koymak öksürüğü hafifletir.", en: "Placing a humidifier in the room relieves cough." }
+                        }
+                    ]
+                },
+                "kusma": {
+                    description: {
+                        tr: "Bebeklerde mide içeriğinin ağızdan çıkması durumu.",
+                        en: "Expulsion of stomach contents through the mouth in babies."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Rezene Çayı", en: "Fennel Tea" },
+                            description: { tr: "Az miktarda rezene çayı mideyi yatıştırır.", en: "Small amount of fennel tea soothes stomach." }
+                        }
+                    ]
+                }
+            },
+            "cocuk": {
+                "öksürük": {
+                    description: {
+                        tr: "Çocuklarda sık görülen, solunum yollarını temizlemeye yönelik bir refleks hareketidir.",
+                        en: "A common reflex action in children aimed at clearing the respiratory tract."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Bal ve Limon", en: "Honey and Lemon" },
+                            description: { tr: "1 yaşından büyük çocuklar için bal ve limon karışımı öksürüğü yatıştırır.", en: "Honey and lemon mixture soothes cough for children over 1 year old." }
+                        }
+                    ]
+                },
+                "ateş": {
+                    description: {
+                        tr: "Vücut sıcaklığının normalin üzerine çıkması durumudur.",
+                        en: "Body temperature rising above normal."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Ilık Duş", en: "Warm Shower" },
+                            description: { tr: "Ilık su ile duş yaptırmak ateşi düşürmeye yardımcı olur.", en: "Giving a warm shower helps reduce fever." }
+                        }
+                    ]
+                },
+                "ishal": {
+                    description: {
+                        tr: "Sık ve sulu dışkılama durumudur.",
+                        en: "Frequent and watery bowel movements."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Haşlanmış Patates", en: "Boiled Potato" },
+                            description: { tr: "Haşlanmış patates ishal durumunda faydalıdır.", en: "Boiled potato is beneficial in diarrhea." }
+                        }
+                    ]
+                },
+                "kabakulak": {
+                    description: {
+                        tr: "Tükürük bezlerinin viral enfeksiyonudur.",
+                        en: "Viral infection of salivary glands."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Adaçayı Gargarası", en: "Sage Gargle" },
+                            description: { tr: "Adaçayı gargarası ağrıyı hafifletir.", en: "Sage gargle relieves pain." }
+                        }
+                    ]
+                },
+                "dikkat eksikliği": {
+                    description: {
+                        tr: "Çocuklarda odaklanma ve dikkat sorunları.",
+                        en: "Focus and attention problems in children."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Omega-3 Takviyesi", en: "Omega-3 Supplement" },
+                            description: { tr: "Balık yağı gibi omega-3 kaynakları beyin fonksiyonlarını destekler.", en: "Omega-3 sources like fish oil support brain functions." }
+                        }
+                    ]
+                },
+                "bronşit": {
+                    description: {
+                        tr: "Bronşların iltihaplanması durumudur.",
+                        en: "Inflammation of the bronchi."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Okaliptüs Buharı", en: "Eucalyptus Steam" },
+                            description: { tr: "Okaliptüs buharı solumak bronşları açar.", en: "Inhaling eucalyptus steam opens bronchi." }
+                        }
+                    ]
+                },
+                "kızamık": {
+                    description: {
+                        tr: "Viral bir enfeksiyon hastalığıdır.",
+                        en: "A viral infectious disease."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "C Vitamini", en: "Vitamin C" },
+                            description: { tr: "C vitamini bağışıklık sistemini güçlendirir.", en: "Vitamin C strengthens immune system." }
+                        }
+                    ]
+                },
+                "suçiçeği": {
+                    description: {
+                        tr: "Viral bir döküntülü hastalıktır.",
+                        en: "A viral rash disease."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Yulaf Banyosu", en: "Oatmeal Bath" },
+                            description: { tr: "Yulaf banyosu kaşıntıyı hafifletir.", en: "Oatmeal bath relieves itching." }
+                        }
+                    ]
+                },
+                "boğaz ağrısı": {
+                    description: {
+                        tr: "Yutkunma sırasında rahatsızlık ve ağrı hissidir.",
+                        en: "Discomfort and pain during swallowing."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Ballı Süt", en: "Milk with Honey" },
+                            description: { tr: "Ilık ballı süt boğaz ağrısını hafifletir.", en: "Warm milk with honey relieves sore throat." }
+                        }
+                    ]
+                },
+                "kulak ağrısı": {
+                    description: {
+                        tr: "Kulakta hissedilen ağrı ve rahatsızlık hissidir.",
+                        en: "Pain and discomfort felt in the ear."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Sıcak Kompres", en: "Warm Compress" },
+                            description: { tr: "Kulağa sıcak kompres uygulamak ağrıyı hafifletir.", en: "Applying warm compress to ear relieves pain." }
+                        }
+                    ]
+                }
+            },
+            "yetiskin": {
+                "baş ağrısı": {
+                    description: {
+                        tr: "Baş bölgesinde hissedilen ağrı ve rahatsızlık hissidir. Stres, yorgunluk, uykusuzluk veya dehidrasyon gibi nedenlerle ortaya çıkabilir.",
+                        en: "It is the feeling of pain and discomfort felt in the head area. It can occur due to reasons such as stress, fatigue, insomnia or dehydration."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Nane Yağı Masajı", en: "Peppermint Oil Massage" },
+                            description: { tr: "Alın ve şakak bölgesine nane yağı ile hafifçe masaj yapın.", en: "Gently massage the forehead and temple area with peppermint oil." }
+                        }
+                    ]
+                },
+                "migren": {
+                    description: {
+                        tr: "Şiddetli, zonklayıcı baş ağrısı ile karakterize nörolojik bir hastalıktır. Genellikle bulantı, kusma ve ışık hassasiyeti eşlik eder.",
+                        en: "A neurological disease characterized by severe, throbbing headache. Usually accompanied by nausea, vomiting and light sensitivity."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zencefil Çayı", en: "Ginger Tea" },
+                            description: { tr: "Zencefil çayı migren ağrılarını hafifletebilir ve bulantıyı azaltır.", en: "Ginger tea can relieve migraine pain and reduce nausea." }
+                        }
+                    ]
+                },
+                "grip": {
+                    description: {
+                        tr: "İnfluenza virüslerinin neden olduğu solunum yolu enfeksiyonudur. Ateş, öksürük, boğaz ağrısı ve kas ağrıları ile karakterizedir.",
+                        en: "Respiratory infection caused by influenza viruses. Characterized by fever, cough, sore throat and muscle aches."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zencefil-Bal Karışımı", en: "Ginger-Honey Mixture" },
+                            description: { tr: "Rendelenmiş zencefil ve bal karışımı tüketmek bağışıklığı güçlendirir.", en: "Consuming a mixture of grated ginger and honey strengthens immunity." }
+                        }
+                    ]
+                },
+                "alerji": {
+                    description: {
+                        tr: "Bağışıklık sisteminin normalde zararsız maddelere aşırı tepki vermesi durumudur. Burun akıntısı, hapşırık ve kaşıntı ile kendini gösterir.",
+                        en: "A condition where the immune system overreacts to normally harmless substances. Manifests with runny nose, sneezing and itching."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Isırgan Otu Çayı", en: "Nettle Tea" },
+                            description: { tr: "Isırgan otu çayı alerji semptomlarını hafifletir.", en: "Nettle tea relieves allergy symptoms." }
+                        }
+                    ]
+                },
+                "depresyon": {
+                    description: {
+                        tr: "Sürekli üzüntü, ilgi kaybı ve enerji eksikliği ile karakterize duygudurum bozukluğudur.",
+                        en: "A mood disorder characterized by persistent sadness, loss of interest and lack of energy."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Sarı Kantaron Çayı", en: "St. John's Wort Tea" },
+                            description: { tr: "Sarı kantaron çayı hafif depresyon semptomlarını hafifletebilir.", en: "St. John's wort tea can relieve mild depression symptoms." }
+                        }
+                    ]
+                },
+                "kireçlenme": {
+                    description: {
+                        tr: "Eklem kıkırdağının yıpranması sonucu oluşan, ağrı ve hareket kısıtlılığı ile karakterize durumdur.",
+                        en: "A condition characterized by pain and movement limitation resulting from wear of joint cartilage."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zerdeçal", en: "Turmeric" },
+                            description: { tr: "Zerdeçal anti-inflamatuar özellikleri ile eklem ağrılarını hafifletir.", en: "Turmeric relieves joint pain with its anti-inflammatory properties." }
+                        }
+                    ]
+                },
+                "yüksek tansiyon": {
+                    description: {
+                        tr: "Kan basıncının normal değerlerin üzerinde olması durumudur.",
+                        en: "Blood pressure being above normal values."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Sarımsak", en: "Garlic" },
+                            description: { tr: "Çiğ sarımsak tüketmek tansiyonu düşürmeye yardımcı olur.", en: "Consuming raw garlic helps lower blood pressure." }
+                        },
+                        {
+                            title: { tr: "Muz", en: "Banana" },
+                            description: { tr: "Potasyum açısından zengin muz tansiyonu dengeler.", en: "Potassium-rich banana balances blood pressure." }
+                        },
+                        {
+                            title: { tr: "Limonlu Su", en: "Lemon Water" },
+                            description: { tr: "Her sabah bir bardak ılık limonlu su içmek.", en: "Drinking a glass of warm lemon water every morning." }
+                        }
+                    ]
+                },
+                "şeker hastalığı": {
+                    description: {
+                        tr: "Kan şeker seviyelerinin yüksek olması durumudur.",
+                        en: "High blood sugar levels."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Tarçın", en: "Cinnamon" },
+                            description: { tr: "Tarçın kan şekerini düzenlemeye yardımcı olur.", en: "Cinnamon helps regulate blood sugar." }
+                        }
+                    ]
+                },
+                "kolesterol": {
+                    description: {
+                        tr: "Kanda lipid seviyelerinin yüksek olması durumudur.",
+                        en: "High lipid levels in blood."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Yulaf", en: "Oats" },
+                            description: { tr: "Düzenli yulaf tüketimi kolesterolü düşürür.", en: "Regular oat consumption lowers cholesterol." }
+                        }
+                    ]
+                },
+                "uykusuzluk": {
+                    description: {
+                        tr: "Uykuya dalma veya sürdürmede zorluk çekme durumudur.",
+                        en: "Difficulty falling or staying asleep."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Papatya Çayı", en: "Chamomile Tea" },
+                            description: { tr: "Yatmadan önce papatya çayı içmek.", en: "Drinking chamomile tea before bedtime." }
+                        }
+                    ]
+                },
+                "kronik yorgunluk": {
+                    description: {
+                        tr: "Uzun süreli, açıklanamayan yorgunluk durumudur.",
+                        en: "Long-term, unexplained fatigue."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Ginseng Çayı", en: "Ginseng Tea" },
+                            description: { tr: "Ginseng çayı enerji seviyelerini artırır.", en: "Ginseng tea increases energy levels." }
+                        }
+                    ]
+                },
+                "reflü": {
+                    description: {
+                        tr: "Mide asidinin yemek borusuna geri kaçması durumudur.",
+                        en: "Stomach acid flowing back into esophagus."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Elma Sirkesi", en: "Apple Cider Vinegar" },
+                            description: { tr: "Bir bardak suya bir çay kaşığı elma sirkesi ekleyip yemeklerden önce için.", en: "Add a teaspoon of apple cider vinegar to a glass of water and drink before meals." }
+                        }
+                    ]
+                },
+                "hazımsızlık": {
+                    description: {
+                        tr: "Midede rahatsızlık, şişkinlik ve ağrı hissiyle karakterizedir.",
+                        en: "Characterized by stomach discomfort, bloating and pain."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Rezene Çayı", en: "Fennel Tea" },
+                            description: { tr: "Rezene çayı mide kaslarını rahatlatarak hazımsızlığı giderebilir.", en: "Fennel tea can relieve indigestion by relaxing stomach muscles." }
+                        }
+                    ]
+                },
+                "kabızlık": {
+                    description: {
+                        tr: "Seyrek ve zor dışkılama durumudur.",
+                        en: "Infrequent and difficult bowel movements."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Kuru Erik", en: "Dried Prunes" },
+                            description: { tr: "Kuru erik veya erik suyu tüketmek bağırsak hareketlerini artırır.", en: "Consuming dried prunes or prune juice increases bowel movements." }
+                        }
+                    ]
+                },
+                "hemoroid": {
+                    description: {
+                        tr: "Rektal bölgedeki damarların şişmesi ve genişlemesi sonucu oluşan ağrılı durumdur.",
+                        en: "A painful condition resulting from swelling and enlargement of veins in the rectal area."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Aloe Vera", en: "Aloe Vera" },
+                            description: { tr: "Aloe vera jeli hemoroid ağrısını hafifletir ve iyileşmeyi hızlandırır.", en: "Aloe vera gel relieves hemorrhoid pain and speeds up healing." }
+                        }
+                    ]
+                },
+                "prostat": {
+                    description: {
+                        tr: "Erkeklerde prostat bezinin büyümesi sonucu oluşan durumdur.",
+                        en: "Condition resulting from enlargement of prostate gland in men."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Kabak Çekirdeği", en: "Pumpkin Seeds" },
+                            description: { tr: "Kabak çekirdeği prostat sağlığını destekler.", en: "Pumpkin seeds support prostate health." }
+                        }
+                    ]
+                },
+                "menopoz": {
+                    description: {
+                        tr: "Kadınlarda adet döngüsünün sona ermesi durumudur.",
+                        en: "End of menstrual cycle in women."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Keten Tohumu", en: "Flaxseed" },
+                            description: { tr: "Keten tohumu menopoz semptomlarını hafifletir.", en: "Flaxseed relieves menopause symptoms." }
+                        }
+                    ]
+                },
+                "astım": {
+                    description: {
+                        tr: "Solunum yollarının kronik inflamatuar hastalığıdır.",
+                        en: "Chronic inflammatory disease of respiratory tract."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zencefil", en: "Ginger" },
+                            description: { tr: "Zencefil astım semptomlarını hafifletebilir.", en: "Ginger can relieve asthma symptoms." }
+                        }
+                    ]
+                },
+                "bronşit": {
+                    description: {
+                        tr: "Bronşların iltihaplanması durumudur.",
+                        en: "Inflammation of bronchi."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Okaliptüs Yağı", en: "Eucalyptus Oil" },
+                            description: { tr: "Okaliptüs yağı buharı solumak.", en: "Inhaling eucalyptus oil steam." }
+                        }
+                    ]
+                },
+                "sinüzit": {
+                    description: {
+                        tr: "Sinüslerin iltihaplanması sonucu oluşan baş ağrısı ve burun tıkanıklığı durumudur.",
+                        en: "Headache and nasal congestion resulting from sinus inflammation."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Buhar Soluma", en: "Steam Inhalation" },
+                            description: { tr: "Sıcak su buharını solumak sinüsleri açar.", en: "Inhaling hot water steam opens sinuses." }
+                        }
+                    ]
+                },
+                "anksiyete": {
+                    description: {
+                        tr: "Aşırı endişe, korku ve gerginlik hissiyle karakterize durumdur.",
+                        en: "Condition characterized by excessive worry, fear and tension."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Papatya Çayı", en: "Chamomile Tea" },
+                            description: { tr: "Papatya çayı sakinleştirici etki gösterir.", en: "Chamomile tea has calming effect." }
+                        }
+                    ]
+                },
+                "stres": {
+                    description: {
+                        tr: "Fiziksel veya duygusal gerginlik durumudur.",
+                        en: "State of physical or emotional tension."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Meditasyon", en: "Meditation" },
+                            description: { tr: "Düzenli meditasyon stresi azaltır.", en: "Regular meditation reduces stress." }
+                        }
+                    ]
+                },
+                "panik atak": {
+                    description: {
+                        tr: "Ani ve yoğun korku nöbetleriyle karakterize durumdur.",
+                        en: "Condition characterized by sudden and intense fear attacks."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Kedi Otu", en: "Valerian" },
+                            description: { tr: "Kedi otu çayı sakinleştirici etki gösterir.", en: "Valerian tea has calming effect." }
+                        }
+                    ]
+                },
+                "obezite": {
+                    description: {
+                        tr: "Vücut yağ oranının sağlığı tehdit edecek düzeyde artması durumudur.",
+                        en: "Increase in body fat to levels that threaten health."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Yeşil Çay", en: "Green Tea" },
+                            description: { tr: "Yeşil çay metabolizmayı hızlandırır.", en: "Green tea speeds up metabolism." }
+                        }
+                    ]
+                },
+                "gut": {
+                    description: {
+                        tr: "Eklemlerde ürik asit birikmesi sonucu oluşan ağrılı durumdur.",
+                        en: "Painful condition resulting from uric acid accumulation in joints."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Kiraz", en: "Cherry" },
+                            description: { tr: "Kiraz gut ağrılarını hafifletir.", en: "Cherry relieves gout pain." }
+                        }
+                    ]
+                },
+                "romatoid artrit": {
+                    description: {
+                        tr: "Eklemlerde ağrı, şişme ve sertlikle karakterize otoimmün hastalıktır.",
+                        en: "Autoimmune disease characterized by joint pain, swelling and stiffness."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zencefil", en: "Ginger" },
+                            description: { tr: "Zencefil anti-inflamatuar özelliklere sahiptir.", en: "Ginger has anti-inflammatory properties." }
+                        }
+                    ]
+                },
+                "fibromiyalji": {
+                    description: {
+                        tr: "Yaygın kas ağrısı ve yorgunlukla karakterize kronik durumdur.",
+                        en: "Chronic condition characterized by widespread muscle pain and fatigue."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Masaj", en: "Massage" },
+                            description: { tr: "Hafif masaj ağrıyı hafifletebilir.", en: "Light massage can relieve pain." }
+                        }
+                    ]
+                },
+                "bel ağrısı": {
+                    description: {
+                        tr: "Bel bölgesinde hissedilen ağrı ve rahatsızlık hissidir.",
+                        en: "Pain and discomfort felt in lower back area."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Sıcak Kompres", en: "Hot Compress" },
+                            description: { tr: "Sıcak su torbası ile kompres yapmak.", en: "Compressing with hot water bottle." }
+                        }
+                    ]
+                },
+                "boyun ağrısı": {
+                    description: {
+                        tr: "Boyun bölgesinde hissedilen ağrı ve rahatsızlık hissidir.",
+                        en: "Pain and discomfort felt in neck area."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Lavanta Yağı", en: "Lavender Oil" },
+                            description: { tr: "Lavanta yağı ile masaj yapmak.", en: "Massaging with lavender oil." }
+                        }
+                    ]
+                },
+                "eklem ağrısı": {
+                    description: {
+                        tr: "Eklemlerde hissedilen ağrı ve rahatsızlık hissidir.",
+                        en: "Pain and discomfort felt in joints."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zencefil Çayı", en: "Ginger Tea" },
+                            description: { tr: "Zencefil çayı anti-inflamatuar etki gösterir.", en: "Ginger tea has anti-inflammatory effect." }
+                        }
+                    ]
+                },
+                "karpal tünel": {
+                    description: {
+                        tr: "Elde sinir sıkışması sonucu oluşan ağrılı durumdur.",
+                        en: "Painful condition resulting from nerve compression in hand."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Buz Kompresi", en: "Ice Compress" },
+                            description: { tr: "Buz ile kompres yapmak ağrıyı hafifletir.", en: "Compressing with ice relieves pain." }
+                        }
+                    ]
+                },
+                "varis": {
+                    description: {
+                        tr: "Bacaklardaki toplardamarların genişlemesi durumudur.",
+                        en: "Enlargement of veins in legs."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "At Kestanesi", en: "Horse Chestnut" },
+                            description: { tr: "At kestanesi varis ağrılarını hafifletir.", en: "Horse chestnut relieves varicose vein pain." }
+                        }
+                    ]
+                },
+                "selülit": {
+                    description: {
+                        tr: "Cilt altı yağ dokusunun düzensiz dağılımı sonucu oluşan durumdur.",
+                        en: "Condition resulting from irregular distribution of subcutaneous fat tissue."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Kahve Telvesi", en: "Coffee Grounds" },
+                            description: { tr: "Kahve telvesi ile masaj yapmak.", en: "Massaging with coffee grounds." }
+                        }
+                    ]
+                },
+                "saç dökülmesi": {
+                    description: {
+                        tr: "Saçların normalden fazla dökülmesi durumudur.",
+                        en: "Excessive hair loss."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Hint Yağı", en: "Castor Oil" },
+                            description: { tr: "Hint yağı saç köklerini güçlendirir.", en: "Castor oil strengthens hair roots." }
+                        }
+                    ]
+                },
+                "kepek": {
+                    description: {
+                        tr: "Saç derisindeki ölü hücrelerin dökülmesi durumudur.",
+                        en: "Shedding of dead cells from scalp."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Elma Sirkesi", en: "Apple Cider Vinegar" },
+                            description: { tr: "Elma sirkesi ile saçı yıkamak.", en: "Washing hair with apple cider vinegar." }
+                        }
+                    ]
+                },
+                "ağız kokusu": {
+                    description: {
+                        tr: "Ağızdan gelen hoş olmayan koku durumudur.",
+                        en: "Unpleasant odor from mouth."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Maydanoz", en: "Parsley" },
+                            description: { tr: "Maydanoz çiğnemek ağız kokusunu giderir.", en: "Chewing parsley eliminates bad breath." }
+                        }
+                    ]
+                },
+                "diş ağrısı": {
+                    description: {
+                        tr: "Dişlerde hissedilen ağrı ve rahatsızlık hissidir.",
+                        en: "Pain and discomfort felt in teeth."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Karanfil Yağı", en: "Clove Oil" },
+                            description: { tr: "Karanfil yağı diş ağrısını hafifletir.", en: "Clove oil relieves toothache." }
+                        }
+                    ]
+                },
+                "diş eti iltihabı": {
+                    description: {
+                        tr: "Diş etlerinin iltihaplanması durumudur.",
+                        en: "Inflammation of gums."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Tuzlu Su Gargarası", en: "Salt Water Gargle" },
+                            description: { tr: "Tuzlu su ile gargara yapmak.", en: "Gargling with salt water." }
+                        }
+                    ]
+                },
+                "aft": {
+                    description: {
+                        tr: "Ağız içinde oluşan küçük yaralardır.",
+                        en: "Small sores inside mouth."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Bal", en: "Honey" },
+                            description: { tr: "Bal aft yaralarını iyileştirir.", en: "Honey heals canker sores." }
+                        }
+                    ]
+                },
+                "göz kuruluğu": {
+                    description: {
+                        tr: "Gözlerde yeterli nem olmaması durumudur.",
+                        en: "Insufficient moisture in eyes."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Papatya Çayı", en: "Chamomile Tea" },
+                            description: { tr: "Papatya çayı ile göz banyosu yapmak.", en: "Eye bath with chamomile tea." }
+                        }
+                    ]
+                },
+                "göz yorgunluğu": {
+                    description: {
+                        tr: "Gözlerin uzun süre odaklanması sonucu oluşan yorgunluk durumudur.",
+                        en: "Fatigue resulting from prolonged eye focus."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Salatalık", en: "Cucumber" },
+                            description: { tr: "Gözlere salatalık dilimleri koymak.", en: "Placing cucumber slices on eyes." }
+                        }
+                    ]
+                },
+                "kulak çınlaması": {
+                    description: {
+                        tr: "Kulakta duyulan seslerin varlığı durumudur.",
+                        en: "Presence of sounds heard in ear."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Ginkgo Biloba", en: "Ginkgo Biloba" },
+                            description: { tr: "Ginkgo biloba kulak çınlamasını azaltır.", en: "Ginkgo biloba reduces tinnitus." }
+                        }
+                    ]
+                },
+                "baş dönmesi": {
+                    description: {
+                        tr: "Denge kaybı ve sersemlik hissi durumudur.",
+                        en: "Loss of balance and feeling of dizziness."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zencefil", en: "Ginger" },
+                            description: { tr: "Zencefil baş dönmesini hafifletir.", en: "Ginger relieves dizziness." }
+                        }
+                    ]
+                },
+                "hıçkırık": {
+                    description: {
+                        tr: "Diyaframın istemsiz kasılması sonucu oluşan durumdur.",
+                        en: "Condition resulting from involuntary diaphragm contraction."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Şeker", en: "Sugar" },
+                            description: { tr: "Bir çay kaşığı şeker yutmak.", en: "Swallowing a teaspoon of sugar." }
+                        }
+                    ]
+                },
+                "gece terlemesi": {
+                    description: {
+                        tr: "Uyku sırasında aşırı terleme durumudur.",
+                        en: "Excessive sweating during sleep."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Adaçayı Çayı", en: "Sage Tea" },
+                            description: { tr: "Adaçayı çayı terlemeyi azaltır.", en: "Sage tea reduces sweating." }
+                        }
+                    ]
+                },
+                "aşırı terleme": {
+                    description: {
+                        tr: "Normalden fazla terleme durumudur.",
+                        en: "Sweating more than normal."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Adaçayı", en: "Sage" },
+                            description: { tr: "Adaçayı terlemeyi kontrol altına alır.", en: "Sage controls sweating." }
+                        }
+                    ]
+                },
+                "adet sancısı": {
+                    description: {
+                        tr: "Kadınlarda adet döneminde görülen karın ağrısı durumudur.",
+                        en: "Abdominal pain during menstrual period in women."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Papatya Çayı", en: "Chamomile Tea" },
+                            description: { tr: "Papatya çayı adet sancılarını hafifletir.", en: "Chamomile tea relieves menstrual cramps." }
+                        }
+                    ]
+                },
+                "adet düzensizliği": {
+                    description: {
+                        tr: "Kadınlarda adet döngüsünün düzensiz olması durumudur.",
+                        en: "Irregular menstrual cycle in women."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Tarçın", en: "Cinnamon" },
+                            description: { tr: "Tarçın adet düzenini sağlar.", en: "Cinnamon regulates menstruation." }
+                        }
+                    ]
+                },
+                "vajinal mantar": {
+                    description: {
+                        tr: "Vajinal bölgede mantar enfeksiyonu oluşması durumudur.",
+                        en: "Fungal infection in vaginal area."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Yoğurt", en: "Yogurt" },
+                            description: { tr: "Yoğurt mantar enfeksiyonunu tedavi eder.", en: "Yogurt treats fungal infection." }
+                        }
+                    ]
+                },
+                "idrar yolu enfeksiyonu": {
+                    description: {
+                        tr: "İdrar yollarında bakteri oluşması durumudur.",
+                        en: "Bacterial formation in urinary tract."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Kızılcık Suyu", en: "Cranberry Juice" },
+                            description: { tr: "Kızılcık suyu idrar yolu enfeksiyonunu önler.", en: "Cranberry juice prevents urinary tract infection." }
+                        }
+                    ]
+                },
+                "prostatit": {
+                    description: {
+                        tr: "Prostat bezinin iltihaplanması durumudur.",
+                        en: "Inflammation of prostate gland."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Kabak Çekirdeği", en: "Pumpkin Seeds" },
+                            description: { tr: "Kabak çekirdeği prostat sağlığını destekler.", en: "Pumpkin seeds support prostate health." }
+                        }
+                    ]
+                },
+                "erektil disfonksiyon": {
+                    description: {
+                        tr: "Erkeklerde sertleşme problemi durumudur.",
+                        en: "Erection problems in men."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Ginseng", en: "Ginseng" },
+                            description: { tr: "Ginseng cinsel performansı artırır.", en: "Ginseng increases sexual performance." }
+                        }
+                    ]
+                },
+                "libido azlığı": {
+                    description: {
+                        tr: "Cinsel istekte azalma durumudur.",
+                        en: "Decrease in sexual desire."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Maca Kökü", en: "Maca Root" },
+                            description: { tr: "Maca kökü libidoyu artırır.", en: "Maca root increases libido." }
+                        }
+                    ]
+                }
+            },
+            "sindirim": {
+                "hemoroid": {
+                    description: {
+                        tr: "Rektal bölgedeki damarların şişmesi ve genişlemesi sonucu oluşan ağrılı durumdur.",
+                        en: "A painful condition resulting from swelling and enlargement of veins in the rectal area."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Aloe Vera", en: "Aloe Vera" },
+                            description: { tr: "Aloe vera jeli hemoroid ağrısını hafifletir ve iyileşmeyi hızlandırır.", en: "Aloe vera gel relieves hemorrhoid pain and speeds up healing." }
+                        }
+                    ]
+                },
+                "gastrit": {
+                    description: {
+                        tr: "Mide zarının iltihaplanması durumudur. Mide ağrısı, yanma ve bulantı ile karakterizedir.",
+                        en: "Inflammation of the stomach lining. Characterized by stomach pain, burning and nausea."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Lahana Suyu", en: "Cabbage Juice" },
+                            description: { tr: "Taze lahana suyu gastrit semptomlarını hafifletir.", en: "Fresh cabbage juice relieves gastritis symptoms." }
+                        }
+                    ]
+                },
+                "kabızlık": {
+                    description: {
+                        tr: "Seyrek ve zor dışkılama durumudur.",
+                        en: "Infrequent and difficult bowel movements."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Kuru Erik", en: "Dried Prunes" },
+                            description: { tr: "Kuru erik veya erik suyu tüketmek bağırsak hareketlerini artırır.", en: "Consuming dried prunes or prune juice increases bowel movements." }
+                        }
+                    ]
+                },
+                "ülser": {
+                    description: {
+                        tr: "Mide veya onikiparmak bağırsağında oluşan yaralardır.",
+                        en: "Sores in stomach or duodenum."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Lahana Suyu", en: "Cabbage Juice" },
+                            description: { tr: "Lahana suyu ülser iyileşmesini hızlandırır.", en: "Cabbage juice speeds up ulcer healing." }
+                        }
+                    ]
+                },
+                "huzursuz bağırsak": {
+                    description: {
+                        tr: "Karın ağrısı, şişkinlik ve dışkılama alışkanlığı değişiklikleri ile karakterize durumdur.",
+                        en: "Condition characterized by abdominal pain, bloating and changes in bowel habits."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Nane Çayı", en: "Peppermint Tea" },
+                            description: { tr: "Nane çayı bağırsak spazmlarını rahatlatır.", en: "Peppermint tea relieves intestinal spasms." }
+                        }
+                    ]
+                },
+                "mide bulantısı": {
+                    description: {
+                        tr: "Kusma hissiyle birlikte midede rahatsızlık hissidir.",
+                        en: "Stomach discomfort with vomiting sensation."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zencefil", en: "Ginger" },
+                            description: { tr: "Taze zencefil çiğnemek veya zencefil çayı içmek mide bulantısını hafifletebilir.", en: "Chewing fresh ginger or drinking ginger tea can relieve nausea." }
+                        }
+                    ]
+                },
+                "şişkinlik": {
+                    description: {
+                        tr: "Karında gaz birikmesi sonucu oluşan rahatsızlık hissidir.",
+                        en: "Discomfort resulting from gas accumulation in abdomen."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Rezene Çayı", en: "Fennel Tea" },
+                            description: { tr: "Rezene çayı gazı giderir.", en: "Fennel tea eliminates gas." }
+                        }
+                    ]
+                },
+                "ishal": {
+                    description: {
+                        tr: "Sık ve sulu dışkılama durumudur.",
+                        en: "Frequent and watery bowel movements."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Haşlanmış Patates", en: "Boiled Potato" },
+                            description: { tr: "Haşlanmış patates ishal durumunda faydalıdır.", en: "Boiled potato is beneficial in diarrhea." }
+                        }
+                    ]
+                },
+                "gaz": {
+                    description: {
+                        tr: "Sindirim sisteminde gaz birikmesi durumudur.",
+                        en: "Gas accumulation in digestive system."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Kimyon", en: "Cumin" },
+                            description: { tr: "Kimyon gazı giderir.", en: "Cumin eliminates gas." }
+                        }
+                    ]
+                },
+                "reflü": {
+                    description: {
+                        tr: "Mide asidinin yemek borusuna geri kaçması durumudur.",
+                        en: "Stomach acid flowing back into esophagus."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Elma Sirkesi", en: "Apple Cider Vinegar" },
+                            description: { tr: "Bir bardak suya bir çay kaşığı elma sirkesi ekleyip yemeklerden önce için.", en: "Add a teaspoon of apple cider vinegar to a glass of water and drink before meals." }
+                        }
+                    ]
+                },
+                "mide ekşimesi": {
+                    description: {
+                        tr: "Midede yanma hissi durumudur.",
+                        en: "Burning sensation in stomach."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Karbonatlı Su", en: "Baking Soda Water" },
+                            description: { tr: "Bir çay kaşığı karbonatı suya karıştırıp içmek.", en: "Mixing a teaspoon of baking soda in water and drinking." }
+                        }
+                    ]
+                },
+                "safra kesesi taşı": {
+                    description: {
+                        tr: "Safra kesesinde taş oluşumu durumudur.",
+                        en: "Stone formation in gallbladder."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Elma Suyu", en: "Apple Juice" },
+                            description: { tr: "Elma suyu safra taşlarını eritir.", en: "Apple juice dissolves gallstones." }
+                        }
+                    ]
+                },
+                "pankreatit": {
+                    description: {
+                        tr: "Pankreasın iltihaplanması durumudur.",
+                        en: "Inflammation of pancreas."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zencefil", en: "Ginger" },
+                            description: { tr: "Zencefil pankreas iltihabını azaltır.", en: "Ginger reduces pancreas inflammation." }
+                        }
+                    ]
+                },
+                "karaciğer yağlanması": {
+                    description: {
+                        tr: "Karaciğerde yağ birikmesi durumudur.",
+                        en: "Fat accumulation in liver."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Enginar", en: "Artichoke" },
+                            description: { tr: "Enginar karaciğer sağlığını destekler.", en: "Artichoke supports liver health." }
+                        }
+                    ]
+                },
+                "kolit": {
+                    description: {
+                        tr: "Kalın bağırsağın iltihaplanması durumudur.",
+                        en: "Inflammation of large intestine."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Papatya Çayı", en: "Chamomile Tea" },
+                            description: { tr: "Papatya çayı bağırsak iltihabını azaltır.", en: "Chamomile tea reduces intestinal inflammation." }
+                        }
+                    ]
+                },
+                "divertikülit": {
+                    description: {
+                        tr: "Bağırsak divertiküllerinin iltihaplanması durumudur.",
+                        en: "Inflammation of intestinal diverticula."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Sarımsak", en: "Garlic" },
+                            description: { tr: "Sarımsak anti-inflamatuar etki gösterir.", en: "Garlic has anti-inflammatory effect." }
+                        }
+                    ]
+                },
+                "apandisit": {
+                    description: {
+                        tr: "Apandisin iltihaplanması durumudur.",
+                        en: "Inflammation of appendix."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zencefil", en: "Ginger" },
+                            description: { tr: "Zencefil ağrıyı hafifletir.", en: "Ginger relieves pain." }
+                        }
+                    ]
+                },
+                "çölyak": {
+                    description: {
+                        tr: "Gluten intoleransı durumudur.",
+                        en: "Gluten intolerance."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Glutensiz Diyet", en: "Gluten-free Diet" },
+                            description: { tr: "Glutensiz beslenme semptomları hafifletir.", en: "Gluten-free diet relieves symptoms." }
+                        }
+                    ]
+                },
+                "gıda zehirlenmesi": {
+                    description: {
+                        tr: "Bozuk gıda tüketimi sonucu oluşan durumdur.",
+                        en: "Condition resulting from consuming spoiled food."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zencefil Çayı", en: "Ginger Tea" },
+                            description: { tr: "Zencefil çayı mideyi yatıştırır.", en: "Ginger tea soothes stomach." }
+                        }
+                    ]
+                }
+            },
+            "cilt": {
+                "sivilce": {
+                    description: {
+                        tr: "Ciltte yağ bezlerinin tıkanması sonucu oluşan iltihaplı lezyonlardır.",
+                        en: "Inflamed lesions that occur as a result of clogged oil glands in the skin."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Çay Ağacı Yağı", en: "Tea Tree Oil" },
+                            description: { tr: "Pamuk yardımıyla sivilcelere çay ağacı yağı uygulayın.", en: "Apply tea tree oil to pimples with cotton." }
+                        }
+                    ]
+                },
+                "egzama": {
+                    description: {
+                        tr: "Kaşıntı, kızarıklık ve pullanma ile karakterize cilt hastalığıdır.",
+                        en: "A skin disease characterized by itching, redness and scaling."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Hindistan Cevizi Yağı", en: "Coconut Oil" },
+                            description: { tr: "Etkilenen bölgeye hindistan cevizi yağı uygulayın.", en: "Apply coconut oil to the affected area." }
+                        }
+                    ]
+                },
+                "güneş yanığı": {
+                    description: {
+                        tr: "Cildin aşırı güneşe maruz kalması sonucu oluşan kızarıklık ve ağrılı durumdur.",
+                        en: "Redness and painful condition resulting from excessive sun exposure."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Yoğurt", en: "Yogurt" },
+                            description: { tr: "Yanık bölgeye soğuk yoğurt uygulayın.", en: "Apply cold yogurt to burned area." }
+                        }
+                    ]
+                },
+                "sedef hastalığı": {
+                    description: {
+                        tr: "Ciltte kırmızı, pullu lekelerle karakterize kronik bir hastalıktır.",
+                        en: "Chronic disease characterized by red, scaly patches on skin."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Aloe Vera", en: "Aloe Vera" },
+                            description: { tr: "Aloe vera jeli sedef lekelerine uygulanabilir.", en: "Aloe vera gel can be applied to psoriasis patches." }
+                        }
+                    ]
+                },
+                "cilt kuruluğu": {
+                    description: {
+                        tr: "Cildin yeterince nem tutamaması sonucu oluşan durumdur.",
+                        en: "Condition resulting from skin's inability to retain enough moisture."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Hindistan Cevizi Yağı", en: "Coconut Oil" },
+                            description: { tr: "Banyodan sonra hindistan cevizi yağı uygulamak.", en: "Applying coconut oil after bath." }
+                        }
+                    ]
+                },
+                "siyah noktalar": {
+                    description: {
+                        tr: "Ciltteki gözeneklerin tıkanması sonucu oluşan koyu renkli noktalardır.",
+                        en: "Dark spots resulting from clogged skin pores."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Karbonat", en: "Baking Soda" },
+                            description: { tr: "Karbonat ve su karışımı ile peeling yapmak.", en: "Exfoliating with baking soda and water mixture." }
+                        }
+                    ]
+                },
+                "akne": {
+                    description: {
+                        tr: "Ciltte yağ bezlerinin iltihaplanması sonucu oluşan durumdur.",
+                        en: "Condition resulting from inflammation of oil glands in skin."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Bal", en: "Honey" },
+                            description: { tr: "Bal anti-bakteriyel özelliklere sahiptir.", en: "Honey has antibacterial properties." }
+                        }
+                    ]
+                },
+                "rosacea": {
+                    description: {
+                        tr: "Yüzde kızarıklık ve damarlanma ile karakterize durumdur.",
+                        en: "Condition characterized by facial redness and blood vessels."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Yeşil Çay", en: "Green Tea" },
+                            description: { tr: "Yeşil çay kızarıklığı azaltır.", en: "Green tea reduces redness." }
+                        }
+                    ]
+                },
+                "vitiligo": {
+                    description: {
+                        tr: "Ciltte pigment kaybı sonucu oluşan beyaz lekelerdir.",
+                        en: "White spots resulting from pigment loss in skin."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zerdeçal", en: "Turmeric" },
+                            description: { tr: "Zerdeçal cilt pigmentasyonunu destekler.", en: "Turmeric supports skin pigmentation." }
+                        }
+                    ]
+                },
+                "kurdeşen": {
+                    description: {
+                        tr: "Ciltte kaşıntılı, kırmızı kabarıklıkların oluşması durumudur.",
+                        en: "Formation of itchy, red bumps on skin."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Aloe Vera", en: "Aloe Vera" },
+                            description: { tr: "Aloe vera jeli kaşıntıyı hafifletir.", en: "Aloe vera gel relieves itching." }
+                        }
+                    ]
+                },
+                "mantar": {
+                    description: {
+                        tr: "Ciltte mantar enfeksiyonu oluşması durumudur.",
+                        en: "Fungal infection on skin."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Sarımsak", en: "Garlic" },
+                            description: { tr: "Sarımsak anti-fungal özelliklere sahiptir.", en: "Garlic has antifungal properties." }
+                        }
+                    ]
+                },
+                "nasır": {
+                    description: {
+                        tr: "Cildin sürtünmeye maruz kalan bölgelerinde kalınlaşma durumudur.",
+                        en: "Thickening of skin in areas exposed to friction."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Epsom Tuzu", en: "Epsom Salt" },
+                            description: { tr: "Epsom tuzu banyosu nasırı yumuşatır.", en: "Epsom salt bath softens calluses." }
+                        }
+                    ]
+                },
+                "siğil": {
+                    description: {
+                        tr: "Ciltte viral enfeksiyon sonucu oluşan küçük büyümelerdir.",
+                        en: "Small growths on skin resulting from viral infection."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Sarımsak", en: "Garlic" },
+                            description: { tr: "Sarımsak siğilleri iyileştirir.", en: "Garlic heals warts." }
+                        }
+                    ]
+                },
+                "cilt lekeleri": {
+                    description: {
+                        tr: "Ciltte renk değişikliği ile karakterize durumdur.",
+                        en: "Condition characterized by color changes in skin."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Limon", en: "Lemon" },
+                            description: { tr: "Limon suyu cilt lekelerini açar.", en: "Lemon juice lightens skin spots." }
+                        }
+                    ]
+                },
+                "cilt kanseri": {
+                    description: {
+                        tr: "Cilt hücrelerinin kontrolsüz büyümesi durumudur.",
+                        en: "Uncontrolled growth of skin cells."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Yeşil Çay", en: "Green Tea" },
+                            description: { tr: "Yeşil çay anti-kanser özelliklere sahiptir.", en: "Green tea has anti-cancer properties." }
+                        }
+                    ]
+                },
+                                "ben": {
+                    description: {
+                        tr: "Ciltte pigmentli hücrelerin kümelenmesi sonucu oluşan lezyonlardır.",
+                        en: "Lesions resulting from clustering of pigmented cells on skin."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Elma Sirkesi", en: "Apple Cider Vinegar" },
+                            description: { tr: "Elma sirkesi benleri küçültebilir.", en: "Apple cider vinegar can shrink moles." }
+                        }
+                    ]
+                },
+                "doğum lekesi": {
+                    description: {
+                        tr: "Doğumda veya doğumdan kısa süre sonra ciltte görülen lekelerdir.",
+                        en: "Spots on skin seen at birth or shortly after birth."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Limon", en: "Lemon" },
+                            description: { tr: "Limon suyu doğum lekelerini hafifletebilir.", en: "Lemon juice can lighten birthmarks." }
+                        }
+                    ]
+                },
+                "cilt çatlakları": {
+                    description: {
+                        tr: "Ciltte hızlı gerilme sonucu oluşan çizgilerdir.",
+                        en: "Lines on skin resulting from rapid stretching."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Badem Yağı", en: "Almond Oil" },
+                            description: { tr: "Badem yağı çatlakları azaltır.", en: "Almond oil reduces stretch marks." }
+                        }
+                    ]
+                },
+                "ter kokusu": {
+                    description: {
+                        tr: "Terin hoş olmayan koku yayması durumudur.",
+                        en: "Unpleasant odor from sweat."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Elma Sirkesi", en: "Apple Cider Vinegar" },
+                            description: { tr: "Elma sirkesi ter kokusunu giderir.", en: "Apple cider vinegar eliminates sweat odor." }
+                        }
+                    ]
+                },
+                "ayak kokusu": {
+                    description: {
+                        tr: "Ayaklardan gelen hoş olmayan koku durumudur.",
+                        en: "Unpleasant odor from feet."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Siyah Çay", en: "Black Tea" },
+                            description: { tr: "Siyah çay ayak kokusunu giderir.", en: "Black tea eliminates foot odor." }
+                        }
+                    ]
+                }
+            },
+            "solunum": {
+                "öksürük": {
+                    description: {
+                        tr: "Solunum yollarını temizlemeye yönelik bir refleks hareketidir.",
+                        en: "A reflex action aimed at clearing the respiratory tract."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Bal ve Limon", en: "Honey and Lemon" },
+                            description: { tr: "Bir tatlı kaşığı bala birkaç damla limon sıkıp karıştırın.", en: "Squeeze a few drops of lemon into a teaspoon of honey and mix." }
+                        }
+                    ]
+                },
+                "astım": {
+                    description: {
+                        tr: "Solunum yollarının kronik inflamatuar hastalığıdır. Nefes darlığı ve hırıltı ile karakterizedir.",
+                        en: "Chronic inflammatory disease of the respiratory tract. Characterized by shortness of breath and wheezing."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zencefil", en: "Ginger" },
+                            description: { tr: "Zencefil astım semptomlarını hafifletebilir.", en: "Ginger can relieve asthma symptoms." }
+                        }
+                    ]
+                },
+                "bronşit": {
+                    description: {
+                        tr: "Bronşların iltihaplanması durumudur.",
+                        en: "Inflammation of bronchi."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Okaliptüs Yağı", en: "Eucalyptus Oil" },
+                            description: { tr: "Okaliptüs yağı buharı solumak.", en: "Inhaling eucalyptus oil steam." }
+                        }
+                    ]
+                },
+                "sinüzit": {
+                    description: {
+                        tr: "Sinüslerin iltihaplanması sonucu oluşan baş ağrısı ve burun tıkanıklığı durumudur.",
+                        en: "Headache and nasal congestion resulting from sinus inflammation."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Buhar Soluma", en: "Steam Inhalation" },
+                            description: { tr: "Sıcak su buharını solumak sinüsleri açar.", en: "Inhaling hot water steam opens sinuses." }
+                        }
+                    ]
+                },
+                "alerji": {
+                    description: {
+                        tr: "Bağışıklık sisteminin normalde zararsız maddelere aşırı tepki vermesi durumudur.",
+                        en: "Condition where immune system overreacts to normally harmless substances."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Isırgan Otu", en: "Nettle" },
+                            description: { tr: "Isırgan otu çayı alerji semptomlarını hafifletir.", en: "Nettle tea relieves allergy symptoms." }
+                        }
+                    ]
+                },
+                "nezle": {
+                    description: {
+                        tr: "Burun akıntısı, hapşırık ve burun tıkanıklığı ile karakterize durumdur.",
+                        en: "Condition characterized by runny nose, sneezing and nasal congestion."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zencefil Çayı", en: "Ginger Tea" },
+                            description: { tr: "Zencefil çayı nezle semptomlarını hafifletir.", en: "Ginger tea relieves cold symptoms." }
+                        }
+                    ]
+                },
+                "farenjit": {
+                    description: {
+                        tr: "Boğazın arka duvarının iltihaplanması durumudur.",
+                        en: "Inflammation of back wall of throat."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Tuzlu Su Gargarası", en: "Salt Water Gargle" },
+                            description: { tr: "Tuzlu su ile gargara yapmak.", en: "Gargling with salt water." }
+                        }
+                    ]
+                },
+                "larenjit": {
+                    description: {
+                        tr: "Ses tellerinin iltihaplanması durumudur.",
+                        en: "Inflammation of vocal cords."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Ballı Sıcak Su", en: "Hot Water with Honey" },
+                            description: { tr: "Ballı sıcak su içmek.", en: "Drinking hot water with honey." }
+                        }
+                    ]
+                },
+                "zatürre": {
+                    description: {
+                        tr: "Akciğerlerin iltihaplanması durumudur.",
+                        en: "Inflammation of lungs."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zencefil", en: "Ginger" },
+                            description: { tr: "Zencefil anti-inflamatuar etki gösterir.", en: "Ginger has anti-inflammatory effect." }
+                        }
+                    ]
+                },
+                "koah": {
+                    description: {
+                        tr: "Kronik obstrüktif akciğer hastalığıdır.",
+                        en: "Chronic obstructive pulmonary disease."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zerdeçal", en: "Turmeric" },
+                            description: { tr: "Zerdeçal solunum fonksiyonlarını iyileştirir.", en: "Turmeric improves respiratory functions." }
+                        }
+                    ]
+                },
+                "tüberküloz": {
+                    description: {
+                        tr: "Mycobacterium tuberculosis bakterisinin neden olduğu enfeksiyondur.",
+                        en: "Infection caused by Mycobacterium tuberculosis bacteria."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Sarımsak", en: "Garlic" },
+                            description: { tr: "Sarımsak anti-bakteriyel özelliklere sahiptir.", en: "Garlic has antibacterial properties." }
+                        }
+                    ]
+                },
+                "plörezi": {
+                    description: {
+                        tr: "Akciğer zarının iltihaplanması durumudur.",
+                        en: "Inflammation of lung membrane."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zencefil", en: "Ginger" },
+                            description: { tr: "Zencefil ağrıyı hafifletir.", en: "Ginger relieves pain." }
+                        }
+                    ]
+                },
+                "akciğer kanseri": {
+                    description: {
+                        tr: "Akciğer hücrelerinin kontrolsüz büyümesi durumudur.",
+                        en: "Uncontrolled growth of lung cells."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Yeşil Çay", en: "Green Tea" },
+                            description: { tr: "Yeşil çay anti-kanser özelliklere sahiptir.", en: "Green tea has anti-cancer properties." }
+                        }
+                    ]
+                },
+                "uyku apnesi": {
+                    description: {
+                        tr: "Uyku sırasında solunumun durması durumudur.",
+                        en: "Cessation of breathing during sleep."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Bal", en: "Honey" },
+                            description: { tr: "Bal boğazı yumuşatır.", en: "Honey softens throat." }
+                        }
+                    ]
+                },
+                "horlama": {
+                    description: {
+                        tr: "Uyku sırasında solunum yolundan gelen ses durumudur.",
+                        en: "Sound from respiratory tract during sleep."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Nane Yağı", en: "Peppermint Oil" },
+                            description: { tr: "Nane yağı solunum yolunu açar.", en: "Peppermint oil opens respiratory tract." }
+                        }
+                    ]
+                },
+                "burun kanaması": {
+                    description: {
+                        tr: "Burundan kan gelmesi durumudur.",
+                        en: "Bleeding from nose."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Soğuk Kompres", en: "Cold Compress" },
+                            description: { tr: "Buruna soğuk kompres uygulamak.", en: "Applying cold compress to nose." }
+                        }
+                    ]
+                },
+                "boğaz ağrısı": {
+                    description: {
+                        tr: "Yutkunma sırasında rahatsızlık ve ağrı hissidir.",
+                        en: "Discomfort and pain during swallowing."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Ballı Süt", en: "Milk with Honey" },
+                            description: { tr: "Ilık ballı süt boğaz ağrısını hafifletir.", en: "Warm milk with honey relieves sore throat." }
+                        }
+                    ]
+                },
+                "burun tıkanıklığı": {
+                    description: {
+                        tr: "Burun pasajlarının tıkanması durumudur.",
+                        en: "Blockage of nasal passages."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Tuzlu Su", en: "Saline Water" },
+                            description: { tr: "Tuzlu su damlaları burun tıkanıklığını açar.", en: "Saline water drops open nasal congestion." }
+                        }
+                    ]
+                },
+                "nefes darlığı": {
+                    description: {
+                        tr: "Nefes almakta zorluk çekme durumudur.",
+                        en: "Difficulty breathing."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Nane Çayı", en: "Peppermint Tea" },
+                            description: { tr: "Nane çayı nefes almayı kolaylaştırır.", en: "Peppermint tea makes breathing easier." }
+                        }
+                    ]
+                },
+                "hıçkırık": {
+                    description: {
+                        tr: "Diyaframın istemsiz kasılması sonucu oluşan durumdur.",
+                        en: "Condition resulting from involuntary diaphragm contraction."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Şeker", en: "Sugar" },
+                            description: { tr: "Bir çay kaşığı şeker yutmak.", en: "Swallowing a teaspoon of sugar." }
+                        }
+                    ]
+                }
+            },
+            "romatizma": {
+                "eklem ağrısı": {
+                    description: {
+                        tr: "Eklemlerde hissedilen ağrı ve rahatsızlık hissidir.",
+                        en: "Pain and discomfort felt in joints."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zencefil Çayı", en: "Ginger Tea" },
+                            description: { tr: "Zencefil çayı anti-inflamatuar etki gösterir.", en: "Ginger tea has anti-inflammatory effect." }
+                        }
+                    ]
+                },
+                "kireçlenme": {
+                    description: {
+                        tr: "Eklem kıkırdağının yıpranması sonucu oluşan, ağrı ve hareket kısıtlılığı ile karakterize durumdur.",
+                        en: "Condition characterized by pain and movement limitation resulting from wear of joint cartilage."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zerdeçal", en: "Turmeric" },
+                            description: { tr: "Zerdeçal anti-inflamatuar özellikleri ile eklem ağrılarını hafifletir.", en: "Turmeric relieves joint pain with its anti-inflammatory properties." }
+                        }
+                    ]
+                },
+                "romatoid artrit": {
+                    description: {
+                        tr: "Eklemlerde ağrı, şişme ve sertlikle karakterize otoimmün hastalıktır.",
+                        en: "Autoimmune disease characterized by joint pain, swelling and stiffness."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zencefil", en: "Ginger" },
+                            description: { tr: "Zencefil anti-inflamatuar özelliklere sahiptir.", en: "Ginger has anti-inflammatory properties." }
+                        }
+                    ]
+                },
+                "bel ağrısı": {
+                    description: {
+                        tr: "Bel bölgesinde hissedilen ağrı ve rahatsızlık hissidir.",
+                        en: "Pain and discomfort felt in lower back area."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Sıcak Kompres", en: "Hot Compress" },
+                            description: { tr: "Sıcak su torbası ile kompres yapmak.", en: "Compressing with hot water bottle." }
+                        }
+                    ]
+                },
+                "fibromiyalji": {
+                    description: {
+                        tr: "Yaygın kas ağrısı ve yorgunlukla karakterize kronik durumdur.",
+                        en: "Chronic condition characterized by widespread muscle pain and fatigue."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Masaj", en: "Massage" },
+                            description: { tr: "Hafif masaj ağrıyı hafifletebilir.", en: "Light massage can relieve pain." }
+                        }
+                    ]
+                },
+                "gut": {
+                    description: {
+                        tr: "Eklemlerde ürik asit birikmesi sonucu oluşan ağrılı durumdur.",
+                        en: "Painful condition resulting from uric acid accumulation in joints."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Kiraz", en: "Cherry" },
+                            description: { tr: "Kiraz gut ağrılarını hafifletir.", en: "Cherry relieves gout pain." }
+                        }
+                    ]
+                },
+                "boyun ağrısı": {
+                    description: {
+                        tr: "Boyun bölgesinde hissedilen ağrı ve rahatsızlık hissidir.",
+                        en: "Pain and discomfort felt in neck area."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Lavanta Yağı", en: "Lavender Oil" },
+                            description: { tr: "Lavanta yağı ile masaj yapmak.", en: "Massaging with lavender oil." }
+                        }
+                    ]
+                },
+                "omuz ağrısı": {
+                    description: {
+                        tr: "Omuz bölgesinde hissedilen ağrı ve rahatsızlık hissidir.",
+                        en: "Pain and discomfort felt in shoulder area."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Sıcak Kompres", en: "Hot Compress" },
+                            description: { tr: "Omza sıcak kompres uygulamak.", en: "Applying hot compress to shoulder." }
+                        }
+                    ]
+                },
+                "diz ağrısı": {
+                    description: {
+                        tr: "Diz bölgesinde hissedilen ağrı ve rahatsızlık hissidir.",
+                        en: "Pain and discomfort felt in knee area."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Buz Kompresi", en: "Ice Compress" },
+                            description: { tr: "Dize buz kompresi uygulamak.", en: "Applying ice compress to knee." }
+                        }
+                    ]
+                },
+                "dirsek ağrısı": {
+                    description: {
+                        tr: "Dirsek bölgesinde hissedilen ağrı ve rahatsızlık hissidir.",
+                        en: "Pain and discomfort felt in elbow area."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zencefil Yağı", en: "Ginger Oil" },
+                            description: { tr: "Zencefil yağı ile masaj yapmak.", en: "Massaging with ginger oil." }
+                        }
+                    ]
+                },
+                "el ağrısı": {
+                    description: {
+                        tr: "El bölgesinde hissedilen ağrı ve rahatsızlık hissidir.",
+                        en: "Pain and discomfort felt in hand area."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Ilık Su Banyosu", en: "Warm Water Bath" },
+                            description: { tr: "Elleri ılık suda bekletmek.", en: "Soaking hands in warm water." }
+                        }
+                    ]
+                },
+                "ayak ağrısı": {
+                    description: {
+                        tr: "Ayak bölgesinde hissedilen ağrı ve rahatsızlık hissidir.",
+                        en: "Pain and discomfort felt in foot area."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Epsom Tuzu", en: "Epsom Salt" },
+                            description: { tr: "Epsom tuzu banyosu ağrıyı hafifletir.", en: "Epsom salt bath relieves pain." }
+                        }
+                    ]
+                },
+                "karpal tünel": {
+                    description: {
+                        tr: "Elde sinir sıkışması sonucu oluşan ağrılı durumdur.",
+                        en: "Painful condition resulting from nerve compression in hand."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Buz Kompresi", en: "Ice Compress" },
+                            description: { tr: "Buz ile kompres yapmak ağrıyı hafifletir.", en: "Compressing with ice relieves pain." }
+                        }
+                    ]
+                },
+                "siyatik": {
+                    description: {
+                        tr: "Siyatik sinirin sıkışması sonucu oluşan ağrılı durumdur.",
+                        en: "Painful condition resulting from sciatic nerve compression."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Sıcak Kompres", en: "Hot Compress" },
+                            description: { tr: "Sıcak kompres ağrıyı hafifletir.", en: "Hot compress relieves pain." }
+                        }
+                    ]
+                },
+                "osteoartrit": {
+                    description: {
+                        tr: "Eklem kıkırdağının yıpranması sonucu oluşan durumdur.",
+                        en: "Condition resulting from wear of joint cartilage."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zerdeçal", en: "Turmeric" },
+                            description: { tr: "Zerdeçal eklem ağrılarını hafifletir.", en: "Turmeric relieves joint pain." }
+                        }
+                    ]
+                },
+                "ankilozan spondilit": {
+                    description: {
+                        tr: "Omurganın iltihaplanması sonucu oluşan durumdur.",
+                        en: "Condition resulting from spine inflammation."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zencefil", en: "Ginger" },
+                            description: { tr: "Zencefil anti-inflamatuar etki gösterir.", en: "Ginger has anti-inflammatory effect." }
+                        }
+                    ]
+                },
+                "bursit": {
+                    description: {
+                        tr: "Eklemlerdeki bursa keselerinin iltihaplanması durumudur.",
+                        en: "Inflammation of bursa sacs in joints."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Buz Kompresi", en: "Ice Compress" },
+                            description: { tr: "Buz kompresi iltihabı azaltır.", en: "Ice compress reduces inflammation." }
+                        }
+                    ]
+                },
+                "tendinit": {
+                    description: {
+                        tr: "Tendonların iltihaplanması durumudur.",
+                        en: "Inflammation of tendons."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Dinlenme", en: "Rest" },
+                            description: { tr: "Etkilenen bölgeyi dinlendirmek.", en: "Resting affected area." }
+                        }
+                    ]
+                }
+            },
+            "ruh": {
+                "depresyon": {
+                    description: {
+                        tr: "Sürekli üzüntü, ilgi kaybı ve enerji eksikliği ile karakterize duygudurum bozukluğudur.",
+                        en: "A mood disorder characterized by persistent sadness, loss of interest and lack of energy."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Sarı Kantaron Çayı", en: "St. John's Wort Tea" },
+                            description: { tr: "Sarı kantaron çayı hafif depresyon semptomlarını hafifletebilir.", en: "St. John's wort tea can relieve mild depression symptoms." }
+                        }
+                    ]
+                },
+                "anksiyete": {
+                    description: {
+                        tr: "Aşırı endişe, korku ve gerginlik hissiyle karakterize durumdur.",
+                        en: "Condition characterized by excessive worry, fear and tension."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Papatya Çayı", en: "Chamomile Tea" },
+                            description: { tr: "Papatya çayı sakinleştirici etki gösterir.", en: "Chamomile tea has calming effect." }
+                        }
+                    ]
+                },
+                "stres": {
+                    description: {
+                        tr: "Fiziksel veya duygusal gerginlik durumudur.",
+                        en: "State of physical or emotional tension."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Meditasyon", en: "Meditation" },
+                            description: { tr: "Düzenli meditasyon stresi azaltır.", en: "Regular meditation reduces stress." }
+                        }
+                    ]
+                },
+                "panik atak": {
+                    description: {
+                        tr: "Ani ve yoğun korku nöbetleriyle karakterize durumdur.",
+                        en: "Condition characterized by sudden and intense fear attacks."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Kedi Otu", en: "Valerian" },
+                            description: { tr: "Kedi otu çayı sakinleştirici etki gösterir.", en: "Valerian tea has calming effect." }
+                        }
+                    ]
+                },
+                "uykusuzluk": {
+                    description: {
+                        tr: "Uykuya dalma veya sürdürmede zorluk çekme durumudur.",
+                        en: "Difficulty falling or staying asleep."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Papatya Çayı", en: "Chamomile Tea" },
+                            description: { tr: "Yatmadan önce papatya çayı içmek.", en: "Drinking chamomile tea before bedtime." }
+                        }
+                    ]
+                },
+                "obsesif kompulsif bozukluk": {
+                    description: {
+                        tr: "Takıntılı düşünceler ve zorlantılı davranışlarla karakterize durumdur.",
+                        en: "Condition characterized by obsessive thoughts and compulsive behaviors."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Yeşil Çay", en: "Green Tea" },
+                            description: { tr: "Yeşil çay sakinleştirici etki gösterir.", en: "Green tea has calming effect." }
+                        }
+                    ]
+                },
+                "bipolar bozukluk": {
+                    description: {
+                        tr: "Manik ve depresif dönemlerle karakterize duygudurum bozukluğudur.",
+                        en: "Mood disorder characterized by manic and depressive episodes."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Omega-3", en: "Omega-3" },
+                            description: { tr: "Omega-3 beyin sağlığını destekler.", en: "Omega-3 supports brain health." }
+                        }
+                    ]
+                },
+                "şizofreni": {
+                    description: {
+                        tr: "Düşünce, algı ve davranış bozukluklarıyla karakterize durumdur.",
+                        en: "Condition characterized by thought, perception and behavior disorders."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "B Vitaminleri", en: "B Vitamins" },
+                            description: { tr: "B vitaminleri sinir sistemi sağlığını destekler.", en: "B vitamins support nervous system health." }
+                        }
+                    ]
+                },
+                "dikkat eksikliği": {
+                    description: {
+                        tr: "Odaklanma ve dikkat sorunları ile karakterize durumdur.",
+                        en: "Condition characterized by focus and attention problems."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Omega-3 Takviyesi", en: "Omega-3 Supplement" },
+                            description: { tr: "Balık yağı gibi omega-3 kaynakları beyin fonksiyonlarını destekler.", en: "Omega-3 sources like fish oil support brain functions." }
+                        }
+                    ]
+                },
+                "otizm": {
+                    description: {
+                        tr: "Sosyal etkileşim ve iletişimde zorluklarla karakterize durumdur.",
+                        en: "Condition characterized by difficulties in social interaction and communication."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Probiyotikler", en: "Probiotics" },
+                            description: { tr: "Probiyotikler bağırsak-beyin bağlantısını destekler.", en: "Probiotics support gut-brain connection." }
+                        }
+                    ]
+                },
+                "alzheimer": {
+                    description: {
+                        tr: "Hafıza kaybı ve bilişsel gerileme ile karakterize nörolojik hastalıktır.",
+                        en: "Neurological disease characterized by memory loss and cognitive decline."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Zerdeçal", en: "Turmeric" },
+                            description: { tr: "Zerdeçal beyin sağlığını destekler.", en: "Turmeric supports brain health." }
+                        }
+                    ]
+                },
+                "parkinson": {
+                    description: {
+                        tr: "Titreme ve hareket bozuklukları ile karakterize nörolojik hastalıktır.",
+                        en: "Neurological disease characterized by tremors and movement disorders."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Yeşil Çay", en: "Green Tea" },
+                            description: { tr: "Yeşil çay nöroprotektif etki gösterir.", en: "Green tea has neuroprotective effect." }
+                        }
+                    ]
+                },
+                "demans": {
+                    description: {
+                        tr: "Bilişsel fonksiyonlarda gerileme ile karakterize durumdur.",
+                        en: "Condition characterized by decline in cognitive functions."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "B Vitaminleri", en: "B Vitamins" },
+                            description: { tr: "B vitaminleri beyin sağlığını destekler.", en: "B vitamins support brain health." }
+                        }
+                    ]
+                },
+                "bağımlılık": {
+                    description: {
+                        tr: "Madde veya davranışa karşı kontrol kaybı durumudur.",
+                        en: "Loss of control over substance or behavior."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Egzersiz", en: "Exercise" },
+                            description: { tr: "Düzenli egzersiz bağımlılıkla mücadeleye yardımcı olur.", en: "Regular exercise helps combat addiction." }
+                        }
+                    ]
+                },
+                "yeme bozukluğu": {
+                    description: {
+                        tr: "Sağlıksız yeme alışkanlıkları ile karakterize durumdur.",
+                        en: "Condition characterized by unhealthy eating habits."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Probiyotikler", en: "Probiotics" },
+                            description: { tr: "Probiyotikler bağırsak sağlığını destekler.", en: "Probiotics support gut health." }
+                        }
+                    ]
+                },
+                "travma sonrası stres": {
+                    description: {
+                        tr: "Travmatik olay sonrası gelişen stres bozukluğudur.",
+                        en: "Stress disorder developing after traumatic event."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Lavanta", en: "Lavender" },
+                            description: { tr: "Lavanta sakinleştirici etki gösterir.", en: "Lavender has calming effect." }
+                        }
+                    ]
+                },
+                "sosyal fobi": {
+                    description: {
+                        tr: "Sosyal durumlarda aşırı korku ve kaygı durumudur.",
+                        en: "Excessive fear and anxiety in social situations."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Papatya Çayı", en: "Chamomile Tea" },
+                            description: { tr: "Papatya çayı kaygıyı azaltır.", en: "Chamomile tea reduces anxiety." }
+                        }
+                    ]
+                },
+                "agorafobi": {
+                    description: {
+                        tr: "Açık alanlarda bulunmaktan korkma durumudur.",
+                        en: "Fear of being in open spaces."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Melisa Çayı", en: "Lemon Balm Tea" },
+                            description: { tr: "Melisa çayı sakinleştirici etki gösterir.", en: "Lemon balm tea has calming effect." }
+                        }
+                    ]
+                },
+                "hipokondriyazis": {
+                    description: {
+                        tr: "Hastalık hastalığı olarak bilinen durumdur.",
+                        en: "Condition known as hypochondria."
+                    },
+                    treatments: [
+                        {
+                            title: { tr: "Meditasyon", en: "Meditation" },
+                            description: { tr: "Meditasyon kaygıyı azaltır.", en: "Meditation reduces anxiety." }
+                        }
+                    ]
+                }
+            }
+        };
+
+        // Mevcut dil
+        let currentLang = 'tr';
+
+        // DOM elementleri
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const resultsDiv = document.getElementById('results');
+        const notesContainer = document.getElementById('notesContainer');
+        const noteTitle = document.getElementById('noteTitle');
+        const noteContent = document.getElementById('noteContent');
+        const addNoteBtn = document.getElementById('addNoteBtn');
+        const plantName = document.getElementById('plantName');
+        const plantBenefits = document.getElementById('plantBenefits');
+        const plantUsage = document.getElementById('plantUsage');
+        const plantIcon = document.getElementById('plantIcon');
+        const categoryCards = document.querySelectorAll('.category-card');
+        const quickLinks = document.querySelectorAll('.quick-link');
+        const langButtons = document.querySelectorAll('.lang-btn');
+
+        // Dil değiştirme
+        function changeLanguage(lang) {
+            currentLang = lang;
+            
+            // Butonları güncelle
+            langButtons.forEach(btn => {
+                if (btn.getAttribute('data-lang') === lang) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
             });
-            tabsContainer.appendChild(tab);
+            
+            // Metinleri çevir
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang][key]) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.placeholder = translations[lang][key];
+                    } else {
+                        element.textContent = translations[lang][key];
+                    }
+                }
+            });
+            
+            // Günün bitkisini güncelle
+            setPlantOfDay();
+            
+            // Notları yeniden yükle
+            loadNotes();
+        }
+
+        // Günün bitkisini ayarla
+        function setPlantOfDay() {
+            const today = new Date().getDate();
+            const plantIndex = today % plantsOfDay.length;
+            const plant = plantsOfDay[plantIndex];
+            
+            plantName.textContent = plant.name;
+            plantBenefits.textContent = plant.benefits[currentLang];
+            plantUsage.textContent = plant.usage[currentLang];
+            plantIcon.className = plant.icon;
+        }
+
+        // Notları yükle
+        function loadNotes() {
+            const savedNotes = localStorage.getItem('sifacimNotes');
+            if (savedNotes) {
+                const notes = JSON.parse(savedNotes);
+                displayNotes(notes);
+            } else {
+                notesContainer.innerHTML = `<p>${translations[currentLang].no_notes}</p>`;
+            }
+        }
+
+        // Notları göster
+        function displayNotes(notes) {
+            notesContainer.innerHTML = '';
+            
+            if (notes.length === 0) {
+                notesContainer.innerHTML = `<p>${translations[currentLang].no_notes}</p>`;
+                return;
+            }
+            
+            notes.forEach((note, index) => {
+                const noteElement = document.createElement('div');
+                noteElement.className = 'note-item';
+                noteElement.innerHTML = `
+                    <div class="note-header">
+                        <div class="note-title">${note.title}</div>
+                        <div class="note-date">${note.date}</div>
+                    </div>
+                    <div class="note-content">${note.content}</div>
+                    <div class="note-actions">
+                        <button class="delete-note" data-index="${index}"><i class="fas fa-trash"></i> ${currentLang === 'tr' ? 'Sil' : 'Delete'}</button>
+                    </div>
+                `;
+                notesContainer.appendChild(noteElement);
+            });
+            
+            // Silme butonlarına event listener ekle
+            document.querySelectorAll('.delete-note').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    deleteNote(index);
+                });
+            });
+        }
+
+        // Not ekle
+        function addNote() {
+            const title = noteTitle.value.trim();
+            const content = noteContent.value.trim();
+            
+            if (title === '' || content === '') {
+                alert(currentLang === 'tr' ? 'Lütfen not başlığı ve içeriği girin.' : 'Please enter note title and content.');
+                return;
+            }
+            
+            const savedNotes = localStorage.getItem('sifacimNotes');
+            const notes = savedNotes ? JSON.parse(savedNotes) : [];
+            
+            const newNote = {
+                title: title,
+                content: content,
+                date: new Date().toLocaleDateString(currentLang === 'tr' ? 'tr-TR' : 'en-US')
+            };
+            
+            notes.push(newNote);
+            localStorage.setItem('sifacimNotes', JSON.stringify(notes));
+            
+            displayNotes(notes);
+            
+            // Formu temizle
+            noteTitle.value = '';
+            noteContent.value = '';
+        }
+
+        // Not sil
+        function deleteNote(index) {
+            const savedNotes = localStorage.getItem('sifacimNotes');
+            const notes = JSON.parse(savedNotes);
+            
+            notes.splice(index, 1);
+            localStorage.setItem('sifacimNotes', JSON.stringify(notes));
+            
+            displayNotes(notes);
+        }
+
+        // Arama fonksiyonu
+        function searchDisease() {
+            const query = searchInput.value.trim().toLowerCase();
+            
+            if (query === '') {
+                alert(currentLang === 'tr' ? 'Lütfen bir hastalık adı girin.' : 'Please enter a disease name.');
+                return;
+            }
+            
+            // Tüm kategorilerde hastalığı ara
+            let foundDisease = null;
+            let foundCategory = null;
+            
+            for (const category in diseases) {
+                for (const disease in diseases[category]) {
+                    if (disease.includes(query)) {
+                        foundDisease = disease;
+                        foundCategory = category;
+                        break;
+                    }
+                }
+                if (foundDisease) break;
+            }
+            
+            if (!foundDisease) {
+                showResults(`
+                    <div class="result-header">
+                        <h2 class="result-title">${translations[currentLang].no_results}</h2>
+                    </div>
+                    <div class="result-content">
+                        <p>${translations[currentLang].no_results_desc}</p>
+                        <p>${translations[currentLang].no_results_tip}</p>
+                    </div>
+                `);
+                return;
+            }
+            
+            // Sonuçları göster
+            showDiseaseDetails(foundDisease, foundCategory);
+        }
+
+        // Kategoriye göre hastalıkları göster
+        function showCategoryDiseases(category) {
+            const categoryDiseases = diseases[category];
+            let diseasesHTML = '';
+            
+            for (const disease in categoryDiseases) {
+                diseasesHTML += `
+                    <div class="disease-item" data-disease="${disease}" data-category="${category}">
+                        <h4>${disease.charAt(0).toUpperCase() + disease.slice(1)}</h4>
+                    </div>
+                `;
+            }
+            
+            const resultsHTML = `
+                <button class="back-button" id="backButton"><i class="fas fa-arrow-left"></i> ${translations[currentLang].back_button}</button>
+                <div class="result-header">
+                    <h2 class="result-title">${translations[currentLang][category + '_diseases']}</h2>
+                </div>
+                <div class="disease-list">
+                    ${diseasesHTML}
+                </div>
+            `;
+            
+            showResults(resultsHTML);
+            
+            // Geri dön butonuna event listener ekle
+            document.getElementById('backButton').addEventListener('click', function() {
+                resultsDiv.style.display = 'none';
+            });
+            
+            // Hastalık öğelerine event listener ekle
+            document.querySelectorAll('.disease-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const disease = this.getAttribute('data-disease');
+                    const category = this.getAttribute('data-category');
+                    showDiseaseDetails(disease, category);
+                });
+            });
+        }
+
+        // Hastalık detaylarını göster
+        function showDiseaseDetails(disease, category) {
+            const diseaseData = diseases[category][disease];
+            let treatmentsHTML = '';
+            
+            diseaseData.treatments.forEach(treatment => {
+                treatmentsHTML += `
+                    <div class="treatment-item">
+                        <h4><i class="fas fa-heart"></i> ${treatment.title[currentLang]}</h4>
+                        <p>${treatment.description[currentLang]}</p>
+                    </div>
+                `;
+            });
+            
+            const resultsHTML = `
+                <button class="back-button" id="backButton"><i class="fas fa-arrow-left"></i> ${translations[currentLang].back_button}</button>
+                <div class="result-header">
+                    <h2 class="result-title">${disease.charAt(0).toUpperCase() + disease.slice(1)}</h2>
+                    <span class="category-badge">${translations[currentLang][category + '_diseases']}</span>
+                </div>
+                <div class="result-content">
+                    <p>${diseaseData.description[currentLang]}</p>
+                    
+                    <div class="treatment-list">
+                        <h3><i class="fas fa-leaf"></i> ${translations[currentLang].treatments_title}</h3>
+                        ${treatmentsHTML}
+                    </div>
+                    
+                    <div class="warning">
+                        <strong>${translations[currentLang].warning}:</strong> ${translations[currentLang].warning_text}
+                    </div>
+                </div>
+            `;
+            
+            showResults(resultsHTML);
+            
+            // Geri dön butonuna event listener ekle
+            document.getElementById('backButton').addEventListener('click', function() {
+                if (window.history.length > 1) {
+                    showCategoryDiseases(category);
+                } else {
+                    resultsDiv.style.display = 'none';
+                }
+            });
+        }
+
+        // Sonuçları göster
+        function showResults(html) {
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Hızlı bağlantıları işle
+        function setupQuickLinks() {
+            quickLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    const disease = this.getAttribute('data-disease');
+                    searchInput.value = disease;
+                    searchDisease();
+                });
+            });
+        }
+
+        // Olay dinleyicileri
+        searchButton.addEventListener('click', searchDisease);
+        
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchDisease();
+            }
+        });
+        
+        addNoteBtn.addEventListener('click', addNote);
+        
+        categoryCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const category = this.getAttribute('data-category');
+                showCategoryDiseases(category);
+            });
         });
 
-        function renderSureContent(name) {
-            const sure = sureler[name];
-            contentContainer.innerHTML = `
-                <p class="sure-bismillah">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
-                <div class="sure-arabic">${sure.arabic}</div>
-                <p class="sure-meal">${sure.meal}</p>
-            `;
-        }
-        renderSureContent(Object.keys(sureler)[0]);
-    }
+        // Dil butonlarına event listener ekle
+        langButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const lang = this.getAttribute('data-lang');
+                changeLanguage(lang);
+            });
+        });
 
-    // --- GÜNÜN HİKMETİ MODÜLÜ ---
-    function loadDailyWisdom() {
-        const dualar = ["Rabbim! Gireceğim yere dürüstlükle girmemi sağla; çıkacağım yerden de dürüstlükle çıkmamı sağla.", "Allah'ım! Senden hidayet, takva, iffet ve gönül zenginliği istiyorum.", "Rabbimiz! Bize dünyada da iyilik ver, ahirette de iyilik ver.", "Allah'ım! Beni güzellikler işlediğinde sevinen, kötülükler işlediğinde ise bağışlanma dileyenlerden eyle.", "Rabbim! Göğsümü aç, genişlet. İşimi kolaylaştır."];
-        const esmalar = [{ name: "Er-Rahmân", meaning: "Dünyada bütün mahlûkata merhamet eden." }, { name: "Er-Rahîm", meaning: "Ahirette sadece müminlere acıyan." }, { name: "El-Melik", meaning: "Mülkün, kâinatın sahibi." }, { name: "El-Kuddûs", meaning: "Her türlü eksiklikten uzak, pâk." }, { name: "Es-Selâm", meaning: "Kullarını selâmete çıkaran." }];
-        const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
-        
-        $('#gunun-duasi').textContent = dualar[dayOfYear % dualar.length];
-        $('#gunun-esmasi').textContent = esmalar[dayOfYear % esmalar.length].name;
-        $('#esma-anlami').textContent = esmalar[dayOfYear % esmalar.length].meaning;
-    }
-
-    // --- DİNİ GÜNLER MODÜLÜ ---
-    async function loadDiniGunler() {
-        const listContainer = $('#dini-gunler-listesi');
-        listContainer.innerHTML = 'Yükleniyor...';
-        try {
-            const response = await fetch('https://api.aladhan.com/v1/gToH?date=' + new Date().toLocaleDateString('en-GB').split('/').reverse().join('-'));
-            const data = await response.json();
-            const hijriYear = data.data.hijri.year;
-
-            const days = [
-                { name: "Regaib Kandili", date: `${hijriYear}-07-01` }, { name: "Miraç Kandili", date: `${hijriYear}-07-26` },
-                { name: "Berat Kandili", date: `${hijriYear}-08-14` }, { name: "Ramazan Başlangıcı", date: `${hijriYear}-09-01` },
-                { name: "Kadir Gecesi", date: `${hijriYear}-09-26` }, { name: "Ramazan Bayramı", date: `${hijriYear}-10-01` },
-                { name: "Kurban Bayramı", date: `${hijriYear}-12-10` }, { name: "Aşure Günü", date: `${parseInt(hijriYear)+1}-01-10` },
-                { name: "Mevlid Kandili", date: `${parseInt(hijriYear)+1}-03-11` },
-            ];
-            
-            listContainer.innerHTML = '';
-            for (const day of days) {
-                const gDate = await hijriToGregorian(day.date);
-                const el = document.createElement('div');
-                el.className = 'dini-gun';
-                el.innerHTML = `<span>${day.name}</span> <span class="dini-gun-date">${gDate}</span>`;
-                listContainer.appendChild(el);
-            }
-        } catch (error) {
-            listContainer.innerHTML = 'Dini günler yüklenemedi.';
-        }
-    }
-
-    async function hijriToGregorian(hijriDate) {
-        try {
-            const [year, month, day] = hijriDate.split('-');
-            const response = await fetch(`https://api.aladhan.com/v1/hToG?date=${day}-${month}-${year}`);
-            const data = await response.json();
-            return data.data.gregorian.date;
-        } catch { return "Tarih alınamadı"; }
-    }
-  </script>
+        // Uygulama başlatıldığında
+        document.addEventListener('DOMContentLoaded', function() {
+            setPlantOfDay();
+            loadNotes();
+            setupQuickLinks();
+        });
+    </script>
 </body>
 </html>
-
-
-
-<iframe src="https://archive.org/embed/INDIRILIS_SIRASINA_GORE_SESLI_KURAN_MEALI&playlist=1&list_height=850" width="400" height="700" frameborder="0" webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen></iframe>
